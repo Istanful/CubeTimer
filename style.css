@@ -1,0 +1,78 @@
+html, body { height: 100%; }
+
+body {
+  position: relative;
+  margin: 0;
+  background: #2F567D;
+  color: white;
+  font-family: monospace;
+}
+
+main, #drawer { float: right; position: relative; }
+main {
+  position: relative;
+  width: 70%;
+  transition: transform 0.3s ease;
+  text-align: center;
+  height: 100%;
+}
+
+#drawer {
+  width: 30%;
+  height: 100%;
+  background: #204466;
+  float: right;
+  z-index: 1;
+  transition: transform 0.3s ease;
+  padding: 40px;
+  position: relative;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#drawer::after {
+  position: absolute;
+  content: "";
+  right: 100%;
+  top: 0;
+  height: 100%;
+  width: 30px;
+  background: -webkit-linear-gradient(right, rgba(0,0,0,0.3), rgba(0,0,0,0));
+}
+
+#drawer #toggleDrawer {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  background: #173048;
+}
+
+.hideDrawer {
+  transform: translateX(calc(100% - 40px));
+}
+
+.stepAside {
+  transform: translateX(300px);
+}
+
+.btn {
+  display: inline-block;
+  background: #173048;
+  width: 100px;
+  padding: 10px;
+}
+
+#timer {
+  position: absolute;
+  width: 400px;
+  min-height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#time {
+  font-size: 100px;
+}

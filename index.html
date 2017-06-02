@@ -7,11 +7,28 @@
         <script src="https://apis.google.com/js/platform.js" async defer></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://apis.google.com/js/client:plusone.js" type="text/javascript"></script>
+        <script src="https://apis.google.com/js/api.js"></script>
         <script src="scripts/loader.js"></script>
+        <link href="style.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-      <button id="sign-in">Sign in</button>
-      <script src="https://apis.google.com/js/api.js"></script>
+      <section id="drawer">
+        <a class="btn" id="sign-in">Sign in</a>
+      </section>
+      <main>
+        <div id="timer">
+          <span id="time">1:00.25</span><br>
+          <span id="scramble">
+            R-- D-- R-- D++ R++ D-- R-- D++ R-- D-- U<br>
+            R-- D++ R++ D-- R-- D++ R-- D++ R-- D-- U'<br>
+            R-- D-- R++ D-- R++ D++ R++ D++ R-- D-- U'<br>
+            R-- D-- R-- D-- R-- D++ R-- D-- R-- D-- U'<br>
+            R++ D-- R-- D-- R-- D++ R-- D++ R-- D++ U'<br>
+            R++ D-- R++ D++ R++ D-- R++ D-- R++ D++ U'<br>
+            R-- D-- R++ D++ R-- D-- R++ D-- R++ D-- U
+          </span>
+        </div>
+      </main>
     </body>
 </html>
 
