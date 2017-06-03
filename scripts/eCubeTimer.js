@@ -131,8 +131,10 @@ function promptResetSession(session) {
                         'It will delete all times in the following categories: \n' +
                         categories
                         );
-  if (confirmed)
+  if (confirmed) {
     deleteSession(session);
+    saveProgress();
+  }
 }
 
 function deleteSession(name) {
@@ -143,6 +145,7 @@ function deleteSession(name) {
 }
 
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
+  let otherSession = currentSession != session || currentPuzzle != puzzle;
   currentSession = session;
   currentPuzzle = puzzle;
 
@@ -150,6 +153,7 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
     save.sessions[session] = {};
     $("#session .selectBody").append(buildOption(session, clickSessionButton));
     $("#session .selectedOption").html(session);
+    saveProgress();
   }
   if (!save.sessions[session][puzzle]) {
     save.sessions[session][puzzle] = {}
@@ -157,7 +161,8 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   }
 
   populateTimesDrawer();
-  updateScramble();
+  if (otherSession)
+    updateScramble();
 }
 
 function fetchSessionInfo() {
