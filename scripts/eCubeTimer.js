@@ -10,15 +10,20 @@ let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
 
 document.addEventListener("keyup", handleTimer);
+document.getElementById("timerSection").addEventListener("touchend", handleTimer);
 document.addEventListener("keydown", handleTimer);
+document.getElementById("timerSection").addEventListener("touchstart", handleTimer);
 
 function handleTimer(ev) {
-  if (ev.which == 32) {
-    if (timerState == 0 && ev.type == "keyup")
+  let evUp = (ev.type == "keyup" || ev.type == "touchend");
+  let evDown = !evUp;
+
+  if (ev.which == 32 || ev.which == 0) {
+    if (timerState == 0 && evUp)
       startTimer();
-    else if (timerState == 2 && ev.type == "keydown")
+    else if (timerState == 2 && evDown)
       stopTimer();
-    else if (timerState == 3 && ev.type == "keyup") {
+    else if (timerState == 3 && evUp) {
       timerState = 0;
       saveTime();
     }
