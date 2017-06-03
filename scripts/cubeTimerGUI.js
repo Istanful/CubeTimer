@@ -1,3 +1,4 @@
+
 function updateScramble() {
   currentScramble = scramblers[currentPuzzle]().replace(/\n/g, "<br />");
   $("#scramble").html(currentScramble);
