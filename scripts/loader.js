@@ -38,6 +38,8 @@ function loadScript(fileName, callback) {
 
 let scripts = [
   "authorisation.js",
+  "convenience.js",
+  "scramblers.js",
   "eCubeTimer.js"
 ];
 

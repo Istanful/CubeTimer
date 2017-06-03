@@ -1,5 +1,6 @@
 let currentPuzzle = "megaminx";
 let currentSession = "Session 1";
+let currentScramble;
 
 let lastTimeStarted;
 let lastTimeDuration;
@@ -8,6 +9,8 @@ let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
 
 document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
+
+initialize();
 
 function handleTimer(ev) {
   if (ev.which == 32) {
@@ -32,6 +35,7 @@ function startTimer() {
 function stopTimer() {
   clearInterval(timerIntervalId);
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
+  updateScramble();
   timerState = 3;
 }
 
@@ -76,4 +80,13 @@ function saveTime() {
       duration: lastTimeDuration
     }
   );
+}
+
+function updateScramble() {
+  currentScramble = scramblers[currentPuzzle]();
+  $("#scramble").html(currentScramble);
+}
+
+function initialize() {
+  updateScramble();
 }

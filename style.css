@@ -77,3 +77,9 @@ main {
   font-size: 100px;
   text-align: center;
 }
+
+#scramble {
+  display: inline-block;
+  text-align: left;
+  text-indent: none;
+}
