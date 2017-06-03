@@ -42,10 +42,10 @@ function randomMoves(count = 19, availableMoves = defaultMoves) {
 
   for (let i = 0; i < count; i++) {
     let move = lastMove;
-    while (move == lastMove)
+    while (lastMove.includes(move))
       move = availableMoves.random();
     move += [" ", "' ", "2 "].random();
-    lastmove = move;
+    lastMove = move;
     scramble += move;
   }
   return scramble;
