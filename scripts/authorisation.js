@@ -78,6 +78,12 @@ function load() {
   }
 }
 
+function reset() {
+  destroyDriveData();
+  destroyLocalData();
+  location.reload();
+}
+
 function saveProgress() {
   if (isAuthorized)
     driveSaveOrCreate();
@@ -87,9 +93,11 @@ function saveProgress() {
 
 // TODO Make me complete!
 function getEmptySave() {
-  return {
-    sessions: {}
-  }
+  let save = { sessions: {} };
+  save.sessions[defaultSessionName] = {};
+  save.sessions[defaultSessionName][defaultPuzzle] = {};
+  save.sessions[defaultSessionName][defaultPuzzle].times = [];
+  return save;
 }
 
 function loadLocalStorageSave() {
@@ -174,14 +182,16 @@ function loadFromDrive() {
   getAppDataFile().then(function(res) {
     if (res.fileId) {
       getAppDataFileContent(res.fileId).then(function(res) {
-        save = res.appData;
-        initializeTimer();
+        if (!res.appData)
+          driveCreateSave(initializeTimer);
+        else {
+          save = res.appData;
+          initializeTimer();
+        }
       });
     }
     else {
-      save = getEmptySave();
-      driveSaveOrCreate();
-      initializeTimer();
+      driveCreateSave(initializeTimer)
     }
   });
 }
@@ -191,16 +201,22 @@ function driveSaveOrCreate() {
     if (res.fileId) {
       driveSave(res.fileId, save);
     }
-    else {
-      createAppDataFile().then(function(res) {
-        driveSave(res.fileId, save);
-      });
-    }
+    else
+      driveCreateSave();
   });
 }
 
-function driveSave(fileId, data) {
-  saveAppData(fileId, data).then(function(res) { });
+function driveCreateSave(callback) {
+  save = getEmptySave();
+  createAppDataFile().then(function(res) {
+    driveSave(res.fileId, save, callback);
+  });
+}
+
+function driveSave(fileId, data, callback = function() {}) {
+  return saveAppData(fileId, data).then(function(res) {
+    callback();
+  });
 }
 
 handleClientLoad();

@@ -1,5 +1,5 @@
 let scramblers = {
-  "3x3": function() {
+  "3x3x3": function() {
     let scramble = "";
     let lastMove = "";
     let availableMoves = "RLUDFB".split("");

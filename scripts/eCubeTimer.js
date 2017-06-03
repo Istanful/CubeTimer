@@ -1,7 +1,9 @@
-let currentPuzzle = "megaminx";
-let currentSession = "Session 1";
-let currentScramble;
+let defaultPuzzle = "3x3x3";
+let defaultSessionName = "Main";
+let currentPuzzle = defaultPuzzle;
+let currentSession = defaultSessionName;
 
+let currentScramble;
 let lastTimeStarted;
 let lastTimeDuration;
 let timerIntervalId;
@@ -67,7 +69,6 @@ function parseTime(time) {
 }
 
 function saveTime() {
-  initializeSession();
   save.sessions[currentSession][currentPuzzle].times.push(
     {
       scramble: currentScramble,
@@ -75,8 +76,8 @@ function saveTime() {
       duration: lastTimeDuration
     }
   );
+  $("#times").prepend(buildTimeMarkup(save.sessions[currentSession][currentPuzzle].times.last()))
   saveProgress();
-  updateTimesDrawer();
 }
 
 function updateScramble() {
@@ -84,65 +85,126 @@ function updateScramble() {
   $("#scramble").html(currentScramble);
 }
 
-function updateTimesDrawer() {
-  initializeSession();
+function populateTimesDrawer() {
   let times = save.sessions[currentSession][currentPuzzle].times;
   $("#times").empty();
 
   for (let i = 0; i < times.length; i++) {
-    let li = document.createElement("li");
-    li.innerHTML = formatTime(times[i].duration);
-    $("#times").prepend(li);
+    $("#times").prepend(buildTimeMarkup(times[i]));
   }
 }
+
+function buildTimeMarkup(time) {
+  let li = document.createElement("li");
+  li.innerHTML = "<span>" + formatTime(time.duration) + "</span>" +
+                 "<span style='float: right'>" + new Date(time.started_at).format() + "</span>";
+  return li;
+}
+
 function initializeTimer() {
-  populateSelect("puzzle", scramblers, currentPuzzle, function(el) {
-    setSession($("#session")[0].childNodes[1].innerHTML, el.innerHTML);
-    updateScramble();
-  });
-  activateSelects();
-  initializeSession();
+  populateSessionSelects();
+  $("#newSession").click(promptNewSession);
+  $("#resetSession").click(function() { promptResetSession(currentSession) });
   updateScramble();
-  updateTimesDrawer();
+  populateTimesDrawer();
 }
 
-function initializeSession() {
-  if (!save.sessions[currentSession])
-      save.sessions[currentSession] = {};
-  if (!save.sessions[currentSession][currentPuzzle]) {
-    save.sessions[currentSession][currentPuzzle] = {}
-    save.sessions[currentSession][currentPuzzle].times = [];
+function populateSessionSelects() {
+  let action = function() {
+    fetchSessionInfo();
+    createOrChooseSession();
   }
+
+  populateSelect("puzzle", scramblers, currentPuzzle, action);
+  populateSelect("session", save.sessions, currentSession, action);
 }
 
-function setSession(session, puzzle) {
+function promptNewSession() {
+  let name = prompt("Please enter session name");
+  if (name != null && name != "")
+    createOrChooseSession(name);
+}
+
+function promptResetSession(session) {
+  let categories = Object.keys(save.sessions[session]).join("\n");
+  let confirmed = confirm('Are you sure you want to delete the session "' + session + '"?\n\n' +
+                        'It will delete all times in the following categories: \n' +
+                        categories
+                        );
+  if (confirmed)
+    deleteSession(session);
+}
+
+function deleteSession(name) {
+  delete save.sessions[name];
+  let session = Object.keys(save.sessions)[0];
+  createOrChooseSession(session || defaultSessionName);
+  updateSelectValues("session", save.sessions, session);
+}
+
+function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
   currentSession = session;
   currentPuzzle = puzzle;
-  initializeSession();
-  updateTimesDrawer();
+
+  if (!save.sessions[session])
+    save.sessions[session] = {};
+  if (!save.sessions[session][puzzle]) {
+    save.sessions[session][puzzle] = {}
+    save.sessions[session][puzzle].times = [];
+  }
+
+  populateTimesDrawer();
+  updateScramble();
+}
+
+function fetchSessionInfo() {
+  currentPuzzle = $("#puzzle .selectedOption").html();
+  currentSession = $("#session .selectedOption").html();
+}
+
+/* Inputs
+-------------------------------------------------------------------------------------------*/
+
+function closeSelects() {
+  let selecting = document.getElementsByClassName("selecting");
+  if (selecting.length != 0)
+    $(".selecting").removeClass("selecting");
 }
 
 function populateSelect(id, data, defaultOption, onSelection = function(el) { }) {
+  updateSelectValues(id, data, defaultOption, onSelection);
+  activateSelect(id, onSelection)
+}
+
+function updateSelectValues(id, data, defaultOption, onSelection = function(el) {}) {
   let select = $("#" + id);
-  let selectBody = $("#" + id + " .selectBody");
-  let selected = $("#" + id + " .selectedOption");
+  let selectBody = select.find(".selectBody");
+  selectBody.html("");
+  let selected = select.find(".selectedOption");
   selected.html(defaultOption);
 
-  for (let option in data) {
-    let optionMarkup = document.createElement("div");
-    optionMarkup.className = "selectOption";
-    optionMarkup.innerHTML = option;
-    selectBody.append(optionMarkup);
-  }
+  for (let option in data)
+    selectBody.prepend(buildOption(option, onSelection));
+}
 
-  select.click(function() { $(this).toggleClass("selecting"); });
-  selectBody.children().each(function() {
-    $(this).click(function() { onSelection(this); });
+function activateSelect(id, onSelection) {
+  let select = $("#" + id);
+  let selectBody = select.find(".selectBody");
+  select.click(function() {
+    $(this).toggleClass("selecting");
+  });
+
+  $(selectBody).children().each(function() {
+    $(this).click(function() {
+      select.find(".selectedOption").html($(this).html());
+      onSelection(this);
+    });
   })
 }
 
-function activateSelects() {
-  $(".selectOption").click(function() {
-    $(this)[0].parentElement.parentElement.childNodes[1].innerHTML = $(this).text();
-  })
+function buildOption(name, onSelection) {
+  let optionMarkup = document.createElement("div");
+  optionMarkup.className = "selectOption";
+  optionMarkup.innerHTML = name;
+  return optionMarkup;
 }
