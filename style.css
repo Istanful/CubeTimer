@@ -24,7 +24,7 @@ main {
   float: right;
   z-index: 1;
   transition: transform 0.3s ease;
-  padding: 40px;
+  padding: 20px;
   position: relative;
   box-sizing: border-box;
   text-align: center;
@@ -36,7 +36,7 @@ main {
   right: 100%;
   top: 0;
   height: 100%;
-  width: 30px;
+  width: 10px;
   background: -webkit-linear-gradient(right, rgba(0,0,0,0.3), rgba(0,0,0,0));
 }
 
@@ -75,4 +75,5 @@ main {
 
 #time {
   font-size: 100px;
+  text-align: center;
 }

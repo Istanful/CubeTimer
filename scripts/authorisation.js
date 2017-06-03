@@ -86,9 +86,7 @@ function saveProgress() {
 // TODO Make me complete!
 function getEmptySave() {
   return {
-    times: {
-      megaminx: []
-    }
+    sessions: { }
   }
 }
 
@@ -144,10 +142,12 @@ function saveAppData(fileId, appData) {
   });
 }
 
-function destroyAppData(fileId) {
-  return gapi.client.request({
-    path: '/drive/v3/files/' + fileId,
-    method: 'DELETE'
+function destroyAppData() {
+  getAppDataFile().then(function(res) {
+    return gapi.client.request({
+      path: '/drive/v3/files/' + res.fileId,
+      method: 'DELETE'
+    });
   });
 }
 
