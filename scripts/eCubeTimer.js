@@ -110,13 +110,13 @@ function initializeTimer() {
 }
 
 function populateSessionSelects() {
-  let action = function() {
-    fetchSessionInfo();
-    createOrChooseSession();
-  }
+  populateSelect("puzzle", scramblers, currentPuzzle, clickSessionButton);
+  populateSelect("session", save.sessions, currentSession, clickSessionButton);
+}
 
-  populateSelect("puzzle", scramblers, currentPuzzle, action);
-  populateSelect("session", save.sessions, currentSession, action);
+function clickSessionButton() {
+  fetchSessionInfo();
+  createOrChooseSession();
 }
 
 function promptNewSession() {
@@ -146,8 +146,11 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   currentSession = session;
   currentPuzzle = puzzle;
 
-  if (!save.sessions[session])
+  if (!save.sessions[session]) {
     save.sessions[session] = {};
+    $("#session .selectBody").append(buildOption(session, clickSessionButton));
+    $("#session .selectedOption").html(session);
+  }
   if (!save.sessions[session][puzzle]) {
     save.sessions[session][puzzle] = {}
     save.sessions[session][puzzle].times = [];
@@ -173,7 +176,7 @@ function closeSelects() {
 
 function populateSelect(id, data, defaultOption, onSelection = function(el) { }) {
   updateSelectValues(id, data, defaultOption, onSelection);
-  activateSelect(id, onSelection)
+  $("#" + id).click(function() { $(this).toggleClass("selecting"); });
 }
 
 function updateSelectValues(id, data, defaultOption, onSelection = function(el) {}) {
@@ -187,24 +190,13 @@ function updateSelectValues(id, data, defaultOption, onSelection = function(el) 
     selectBody.prepend(buildOption(option, onSelection));
 }
 
-function activateSelect(id, onSelection) {
-  let select = $("#" + id);
-  let selectBody = select.find(".selectBody");
-  select.click(function() {
-    $(this).toggleClass("selecting");
-  });
-
-  $(selectBody).children().each(function() {
-    $(this).click(function() {
-      select.find(".selectedOption").html($(this).html());
-      onSelection(this);
-    });
-  })
-}
-
 function buildOption(name, onSelection) {
-  let optionMarkup = document.createElement("div");
-  optionMarkup.className = "selectOption";
-  optionMarkup.innerHTML = name;
-  return optionMarkup;
+  let option = document.createElement("div");
+  option.className = "selectOption";
+  option.innerHTML = name;
+  $(option).click(function() {
+      $(option).parent().parent().find(".selectedOption").html($(this).html());
+      onSelection(option);
+  });
+  return option;
 }
