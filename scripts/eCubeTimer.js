@@ -10,8 +10,6 @@ let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
 document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
 
-initialize();
-
 function handleTimer(ev) {
   if (ev.which == 32) {
     if (timerState == 0 && ev.type == "keyup")
@@ -68,25 +66,44 @@ function parseTime(time) {
 }
 
 function saveTime() {
+  initializeSession();
+  save.sessions[currentSession].times.push(
+    {
+      scramble: currentScramble,
+      started_at: lastTimeStarted,
+      duration: lastTimeDuration
+    }
+  );
+  saveProgress();
+  updateTimesDrawer();
+}
+
+function updateScramble() {
+  currentScramble = scramblers[currentPuzzle]().replace(/\n/g, "<br />");
+  $("#scramble").html(currentScramble);
+}
+
+function updateTimesDrawer() {
+  let times = save.sessions[currentSession].times;
+  $("#times").empty();
+
+  for (let i = 0; i < times.length; i++) {
+    let li = document.createElement("li");
+    li.innerHTML = formatTime(times[i].duration);
+    $("#times").prepend(li);
+  }
+}
+function initializeTimer() {
+  initializeSession();
+  updateScramble();
+  updateTimesDrawer();
+}
+
+function initializeSession() {
   if (!save.sessions[currentSession]) {
       save.sessions[currentSession] = {
         puzzle: currentPuzzle,
         times: []
       }
   }
-  save.sessions[currentSession].times.push(
-    {
-      started_at: lastTimeStarted,
-      duration: lastTimeDuration
-    }
-  );
-}
-
-function updateScramble() {
-  currentScramble = scramblers[currentPuzzle]();
-  $("#scramble").html(currentScramble);
-}
-
-function initialize() {
-  updateScramble();
 }

@@ -72,13 +72,15 @@ function setSigninStatus(isSignedIn) {
 function load() {
   if (isAuthorized)
     loadFromDrive();
-  else
+  else {
     loadLocalStorageSave();
+    initializeTimer();
+  }
 }
 
 function saveProgress() {
   if (isAuthorized)
-    driveSave();
+    driveSaveOrCreate();
   else
     saveToLocalStorage();
 }
@@ -86,13 +88,12 @@ function saveProgress() {
 // TODO Make me complete!
 function getEmptySave() {
   return {
-    sessions: { }
+    sessions: {}
   }
 }
 
 function loadLocalStorageSave() {
   save = localStorage.eCubeTimer ? JSON.parse(localStorage.eCubeTimer) : getEmptySave();
-  console.log("local storage loaded")
 }
 
 function saveToLocalStorage() {
@@ -138,17 +139,21 @@ function saveAppData(fileId, appData) {
     params: {
       uploadType: 'media'
     },
-    body: JSON.stringify(appData)
+    body: String(JSON.stringify(appData))
   });
 }
 
-function destroyAppData() {
+function destroyDriveData() {
   getAppDataFile().then(function(res) {
     return gapi.client.request({
       path: '/drive/v3/files/' + res.fileId,
       method: 'DELETE'
     });
   });
+}
+
+function destroyLocalData() {
+  localStorage.clear();
 }
 
 function getAppDataFileContent(fileId) {
@@ -167,17 +172,25 @@ function getAppDataFileContent(fileId) {
 
 function loadFromDrive() {
   getAppDataFile().then(function(res) {
-    if (res.fileId)
-      getAppDataFileContent(res.fileId).then(function(res) { save = JSON.parse(res.appData) });
-    else
+    if (res.fileId) {
+      getAppDataFileContent(res.fileId).then(function(res) {
+        save = res.appData;
+        initializeTimer();
+      });
+    }
+    else {
       save = getEmptySave();
+      driveSaveOrCreate();
+      initializeTimer();
+    }
   });
 }
 
 function driveSaveOrCreate() {
   getAppDataFile().then(function(res) {
-    if (res.fileId)
+    if (res.fileId) {
       driveSave(res.fileId, save);
+    }
     else {
       createAppDataFile().then(function(res) {
         driveSave(res.fileId, save);
@@ -187,7 +200,7 @@ function driveSaveOrCreate() {
 }
 
 function driveSave(fileId, data) {
-  saveAppData(fileId, data);
+  saveAppData(fileId, data).then(function(res) {});
 }
 
 handleClientLoad();
