@@ -81,8 +81,8 @@ function load() {
 function saveProgress() {
   if (isAuthorized)
     driveSaveOrCreate();
-  else
-    saveToLocalStorage();
+  /* Always save to local storage for backup */
+  saveToLocalStorage()
 }
 
 // TODO Make me complete!
@@ -200,7 +200,7 @@ function driveSaveOrCreate() {
 }
 
 function driveSave(fileId, data) {
-  saveAppData(fileId, data).then(function(res) {});
+  saveAppData(fileId, data).then(function(res) { });
 }
 
 handleClientLoad();

@@ -52,11 +52,25 @@ main {
   transform: translateX(300px);
 }
 
-.btn {
+.btn, .select, .selectOption {
+  cursor: pointer;
   display: inline-block;
   background: #173048;
   width: 100px;
   padding: 10px;
+  position: relative;
+}
+
+.select .selectBody {
+  display: none;
+}
+.select.selecting .selectBody {
+  display: block;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  left: 0;
+  background: inherit;
 }
 
 #timer {

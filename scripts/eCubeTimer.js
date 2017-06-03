@@ -34,6 +34,7 @@ function stopTimer() {
   clearInterval(timerIntervalId);
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
   updateScramble();
+  saveProgress();
   timerState = 3;
 }
 
@@ -67,7 +68,7 @@ function parseTime(time) {
 
 function saveTime() {
   initializeSession();
-  save.sessions[currentSession].times.push(
+  save.sessions[currentSession][currentPuzzle].times.push(
     {
       scramble: currentScramble,
       started_at: lastTimeStarted,
@@ -84,7 +85,8 @@ function updateScramble() {
 }
 
 function updateTimesDrawer() {
-  let times = save.sessions[currentSession].times;
+  initializeSession();
+  let times = save.sessions[currentSession][currentPuzzle].times;
   $("#times").empty();
 
   for (let i = 0; i < times.length; i++) {
@@ -94,16 +96,53 @@ function updateTimesDrawer() {
   }
 }
 function initializeTimer() {
+  populateSelect("puzzle", scramblers, currentPuzzle, function(el) {
+    setSession($("#session")[0].childNodes[1].innerHTML, el.innerHTML);
+    updateScramble();
+  });
+  activateSelects();
   initializeSession();
   updateScramble();
   updateTimesDrawer();
 }
 
 function initializeSession() {
-  if (!save.sessions[currentSession]) {
-      save.sessions[currentSession] = {
-        puzzle: currentPuzzle,
-        times: []
-      }
+  if (!save.sessions[currentSession])
+      save.sessions[currentSession] = {};
+  if (!save.sessions[currentSession][currentPuzzle]) {
+    save.sessions[currentSession][currentPuzzle] = {}
+    save.sessions[currentSession][currentPuzzle].times = [];
   }
+}
+
+function setSession(session, puzzle) {
+  currentSession = session;
+  currentPuzzle = puzzle;
+  initializeSession();
+  updateTimesDrawer();
+}
+
+function populateSelect(id, data, defaultOption, onSelection = function(el) { }) {
+  let select = $("#" + id);
+  let selectBody = $("#" + id + " .selectBody");
+  let selected = $("#" + id + " .selectedOption");
+  selected.html(defaultOption);
+
+  for (let option in data) {
+    let optionMarkup = document.createElement("div");
+    optionMarkup.className = "selectOption";
+    optionMarkup.innerHTML = option;
+    selectBody.append(optionMarkup);
+  }
+
+  select.click(function() { $(this).toggleClass("selecting"); });
+  selectBody.children().each(function() {
+    $(this).click(function() { onSelection(this); });
+  })
+}
+
+function activateSelects() {
+  $(".selectOption").click(function() {
+    $(this)[0].parentElement.parentElement.childNodes[1].innerHTML = $(this).text();
+  })
 }
