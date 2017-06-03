@@ -127,7 +127,6 @@ function deleteSession(name) {
 }
 
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
-  let otherSession = currentSession != session || currentPuzzle != puzzle;
   currentSession = session;
   currentPuzzle = puzzle;
 
@@ -143,8 +142,7 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   }
 
   populateTimesDrawer();
-  if (otherSession)
-    updateScramble();
+  updateScramble();
 }
 
 function getStats(options = {}) {

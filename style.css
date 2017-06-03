@@ -103,6 +103,7 @@ main {
   display: inline-block;
   text-align: left;
   text-indent: none;
+  max-width: 50%;
 }
 
 #times {
