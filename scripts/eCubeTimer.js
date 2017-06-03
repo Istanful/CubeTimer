@@ -46,6 +46,7 @@ function updateTimer() {
 }
 
 function formatTime(time) {
+  if (time == -1) { return "N/A" }
   let cs = time % 1000;
   let s = time % (1000 * 60) - cs;
   let m = time - s - cs;
@@ -78,6 +79,7 @@ function saveTime() {
   );
   $("#times").prepend(buildTimeMarkup(save.sessions[currentSession][currentPuzzle].times.last()))
   saveProgress();
+  updateStats();
 }
 
 function populateTimesDrawer() {
@@ -90,6 +92,7 @@ function populateTimesDrawer() {
 }
 
 function initializeTimer() {
+  updateStats();
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
   $("#resetSession").click(function() { promptResetSession(currentSession) });
@@ -120,6 +123,7 @@ function deleteSession(name) {
   let session = Object.keys(save.sessions)[0];
   createOrChooseSession(session || defaultSessionName);
   updateSelectValues("session", save.sessions, session);
+  updateStats();
 }
 
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
@@ -141,4 +145,44 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   populateTimesDrawer();
   if (otherSession)
     updateScramble();
+}
+
+function getStats(options = {}) {
+  let times = save.sessions[currentSession][currentPuzzle].times;
+
+  let stats = "";
+  let averages = options.averages || [5, 12];
+
+  stats += options.count || "Number of solves: " + times.length + "\n";
+  stats += options.best || "Best: " + times.min("duration").formatTime() + "\n";
+  stats += options.worst || "Worst: " + times.max("duration").formatTime() + "\n";
+
+  for (let i = 0; i < averages.length; i++) {
+    stats += options.bestAvg || "Best avg" + averages[i] + ": " + bestAverage(averages[i]).formatTime() + "\n";
+    let current = getAverage(times.length - averages[i], times.length).formatTime();
+    stats += options.currentAvg || "Current avg" + averages[i] + ": " + current + "\n"
+  }
+  stats += options.sessionAvg || "Session average: " + getAverage(0, times.length).formatTime();
+  return stats;
+}
+
+function getAverage(start = 0, end = 2, times = save.sessions[currentSession][currentPuzzle].times) {
+  if (end - start > times.length) { return -1 }
+  return calcAverage(times.range(start, end));
+}
+
+function bestAverage(count, times = save.sessions[currentSession][currentPuzzle].times) {
+  if (count > times.length) { return -1 }
+  let averages = [];
+  for (let i = 0; i <= times.length - count; i++)
+    averages.push(getAverage(i, i + count));
+  return averages.min("duration");
+}
+
+function calcAverage(times) {
+  if (times.length < 3) { return -1; }
+  let sum = times.sum("duration") -
+            times.min("duration") -
+            times.max("duration");
+  return sum / [times.length - 2, 1].max();
 }

@@ -88,12 +88,9 @@ main {
 }
 
 #timer {
-  position: absolute;
-  width: 400px;
+  float: left;
+  width: 100%;
   min-height: 200px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 
 #time {
@@ -118,7 +115,7 @@ main {
 }
 
 #timesShadow {
-  margin: 0;
+  margin-bottom: -50px; /* To not affect the flow */
   z-index: 1;
   display: block;
   position: relative;
@@ -144,4 +141,16 @@ main {
 #times li.slide {
   transform: translate(0, 0);
   transition: transform 0.2s;
+}
+
+#stats {
+  text-align: left;
+}
+
+#statsSection {
+  float: left;
+  background: #c14444;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 130px;
 }

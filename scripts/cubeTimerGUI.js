@@ -1,6 +1,6 @@
 
 function updateScramble() {
-  currentScramble = scramblers[currentPuzzle]().replace(/\n/g, "<br />");
+  currentScramble = scramblers[currentPuzzle]().break();
   $("#scramble").html(currentScramble);
 }
 
@@ -57,4 +57,9 @@ function clickSessionButton() {
 function populateSessionSelects() {
   populateSelect("puzzle", scramblers, currentPuzzle, clickSessionButton);
   populateSelect("session", save.sessions, currentSession, clickSessionButton);
+}
+
+function updateStats() {
+  let stats = getStats().break();
+  $("#stats").html(stats);
 }

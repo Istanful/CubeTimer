@@ -6,6 +6,53 @@ Array.prototype.last = function() {
   return this[this.length - 1];
 }
 
+Array.prototype.min = function(property) {
+  if (this.length == 0) { return -1; }
+  let min = this[0];
+  for (let i = 0; i < this.length; i++) {
+    if ((this[i][property] || this[i]) < (min[property] || min))
+      min = this[i]
+  }
+  return min[property] || min;
+}
+
+Array.prototype.max = function(property) {
+  if (this.length == 0) { return -1; }
+  let max = this[0];
+  for (let i = 0; i < this.length; i++) {
+    if ((this[i][property] || this[i]) > (max[property] || max))
+      max = this[i];
+  }
+  return max[property] || max;
+}
+
+Array.prototype.sum = function(property) {
+  if (this.length == 0) { return 0; }
+  let sum = 0;
+  for (let i = 0; i < this.length; i++)
+    sum += this[i][property] || this[i];
+  return sum;
+}
+
+Array.prototype.range = function(start, end) {
+  let collection = [];
+  for (let i = start; i < end; i++)
+    collection.push(this[i]);
+  return collection;
+}
+
+Array.prototype.average = function(property) {
+  return this.sum(property) / this.length;
+}
+
 Date.prototype.format = function() {
   return this.getDate() + "/" + this.getDay() + "/" + this.getFullYear();
+}
+
+Number.prototype.formatTime = function() {
+  return formatTime(this);
+}
+
+String.prototype.break = function() {
+  return this.replace(/\n/g, "<br />");
 }
