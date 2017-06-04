@@ -4,10 +4,16 @@ function updateScramble() {
   $("#scramble").html(currentScramble);
 }
 
-function buildTimeMarkup(time) {
+function buildTimeMarkup(time, index) {
   let li = document.createElement("li");
-  li.innerHTML = "<span>" + formatTime(time.duration) + "</span>" +
-                 "<span style='float: right'>" + new Date(time.started_at).format() + "</span>";
+  li.innerHTML = "<span style='float: left'>" + formatTime(time.duration) + "</span>" +
+                 "<span>" + new Date(time.started_at).format() + "</span>" +
+                 "<span class='delete-time'>✕</span>";
+  li.childNodes[li.childNodes.length - 1].addEventListener("click", function(el) {
+    let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
+    if (confirmed)
+      deleteTime(index);
+  });
   return li;
 }
 
