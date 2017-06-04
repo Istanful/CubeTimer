@@ -13,15 +13,45 @@ document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
 
 function handleTimer(ev) {
-  if (ev.which == 32) {
-    if (timerState == 0 && ev.type == "keyup")
+  let evUp = ev.type == "keyup";
+  let evDown = !evUp;
+
+  if (ev.which == 32 || ev.which == 0) {
+    if (timerState == 0 && evUp)
       startTimer();
-    else if (timerState == 2 && ev.type == "keydown")
+    else if (timerState == 2 && evDown)
       stopTimer();
-    else if (timerState == 3 && ev.type == "keyup") {
+    else if (timerState == 3 && evUp) {
       timerState = 0;
       saveTime();
     }
+  }
+}
+
+document.getElementById("timerSection").addEventListener("touchstart", handleTouch);
+document.getElementById("timerSection").addEventListener("touchend", handleTouch);
+let touchStart;
+
+function handleTouch(ev) {
+  let maxDistance = 30;
+
+  switch (ev.type) {
+    case "touchstart":
+      if (timerState == 2)
+        stopTimer();
+      touchStart = { x: ev.changedTouches[0].pageX, y: ev.changedTouches[0].pageY };
+      break;
+    case "touchend":
+      let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
+                    y: touchStart.y - ev.changedTouches[0].pageY };
+      if (Math.abs(delta.x) < maxDistance &&
+          Math.abs(delta.y) < maxDistance &&
+          timerState == 0)
+            startTimer();
+      else if (timerState == 3) {
+          timerState = 0;
+          saveTime();
+      }
   }
 }
 
