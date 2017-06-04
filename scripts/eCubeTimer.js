@@ -109,7 +109,7 @@ function saveTime() {
     }
   );
   $("#times").prepend(buildTimeMarkup(times.last(), times.length))
-  saveProgress();
+  syncTimes();
   updateStats();
 }
 

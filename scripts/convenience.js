@@ -45,6 +45,18 @@ Array.prototype.average = function(property) {
   return this.sum(property) / this.length;
 }
 
+Array.prototype.jsonUniqueMerge = function(second) {
+  let all = this.concat(second);
+  for (let a = 0; a < all.length; a++) {
+    let el = JSON.stringify(all[a]);
+    for (let b = a + 1; b < all.length; b++) {
+      if (JSON.stringify(all[b]) == el)
+        all.splice(b, 1);
+    }
+  }
+  return all;
+}
+
 Date.prototype.format = function() {
   return this.getDate() + "/" + this.getDay() + "/" + this.getFullYear();
 }
