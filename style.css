@@ -10,6 +10,17 @@ body {
   font-family: monospace;
 }
 
+/* Prevent selection of text */
+.no-select, .btn, .select {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
 main, #drawer { float: left; position: relative; }
 main {
   position: relative;
@@ -167,9 +178,6 @@ main {
 }
 
 @media (max-width: 1270px) {
-  body {
-    font-size: 300%;
-  }
 
   #timerSection, #drawer {
     width: 100%;

@@ -10,6 +10,7 @@
         <script src="https://apis.google.com/js/api.js"></script>
         <script src="scripts/loader.js"></script>
         <link href="style.css" type="text/css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
     </head>
     <body>
       <main id="timerSection">
@@ -17,13 +18,13 @@
           <div id="stats"></div>
         </div>
 
-        <div id="timer">
+        <div id="timer" class="no-select">
           <span id="time">Ready</span><br>
           <p id="scramble"></p>
         </div>
       </main>
 
-      <section id="drawer" class="shadow">
+      <section id="drawer" class="shadow no-select">
         <div class="select col-3" id="puzzle">
           <div class="selectedOption"></div>
           <div class="selectBody"></div>
