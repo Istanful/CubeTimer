@@ -130,7 +130,7 @@ main {
 }
 
 #times li {
-  text-align: left;
+  text-align: center;
   padding: 10px 20px;
   box-sizing: border-box;
   background: #2F567D;
@@ -145,6 +145,10 @@ main {
   transition: transform 0.2s;
 }
 
+#times .delete-time {
+  cursor: pointer;
+  float: right;
+}
 #stats {
   text-align: left;
 }

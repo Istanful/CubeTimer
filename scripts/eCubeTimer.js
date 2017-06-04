@@ -70,14 +70,15 @@ function parseTime(time) {
 }
 
 function saveTime() {
-  save.sessions[currentSession][currentPuzzle].times.push(
+  times = save.sessions[currentSession][currentPuzzle].times;
+  times.push(
     {
       scramble: currentScramble,
       started_at: lastTimeStarted,
       duration: lastTimeDuration
     }
   );
-  $("#times").prepend(buildTimeMarkup(save.sessions[currentSession][currentPuzzle].times.last()))
+  $("#times").prepend(buildTimeMarkup(times.last(), times.length))
   saveProgress();
   updateStats();
 }
@@ -87,7 +88,7 @@ function populateTimesDrawer() {
   $("#times").empty();
 
   for (let i = 0; i < times.length; i++) {
-    $("#times").prepend(buildTimeMarkup(times[i]));
+    $("#times").prepend(buildTimeMarkup(times[i], i));
   }
 }
 
@@ -183,4 +184,11 @@ function calcAverage(times) {
             times.min("duration") -
             times.max("duration");
   return sum / [times.length - 2, 1].max();
+}
+
+function deleteTime(index, session = currentSession, puzzle = currentPuzzle) {
+  save.sessions[session][puzzle].times.splice(index, 1);
+  populateTimesDrawer();
+  updateStats();
+  saveProgress();
 }
