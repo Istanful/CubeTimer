@@ -12,25 +12,6 @@
         <link href="style.css" type="text/css" rel="stylesheet">
     </head>
     <body>
-      <section id="drawer" class="shadow">
-        <div class="select" id="puzzle">
-          <div class="selectedOption"></div>
-          <div class="selectBody"></div>
-        </div>
-
-        <div class="select" id="session">
-          <div class="selectedOption"></div>
-          <div class="selectBody"></div>
-        </div>
-
-
-        <div class="btn" id="newSession">New</div>
-        <div class="btn" id="resetSession">Delete</div>
-
-        <ul id="times"></ul>
-
-        <a class="btn" id="sign-in">Sign in</a>
-      </section>
       <main id="timerSection">
         <div id="statsSection" class="shadow">
           <div id="stats"></div>
@@ -41,6 +22,25 @@
           <p id="scramble"></p>
         </div>
       </main>
+
+      <section id="drawer" class="shadow">
+        <div class="select col-3" id="puzzle">
+          <div class="selectedOption"></div>
+          <div class="selectBody"></div>
+        </div>
+
+        <div class="select col-4" id="session">
+          <div class="selectedOption"></div>
+          <div class="selectBody"></div>
+        </div>
+
+        <div class="btn col-2" id="newSession">New</div>
+        <div class="btn col-3" id="resetSession">Delete</div>
+
+        <ul id="times"></ul>
+
+        <a class="btn col-12" id="sign-in">Sign in</a>
+      </section>
     </body>
 </html>
 

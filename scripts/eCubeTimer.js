@@ -10,12 +10,10 @@ let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
 
 document.addEventListener("keyup", handleTimer);
-document.getElementById("timerSection").addEventListener("touchend", handleTimer);
 document.addEventListener("keydown", handleTimer);
-document.getElementById("timerSection").addEventListener("touchstart", handleTimer);
 
 function handleTimer(ev) {
-  let evUp = (ev.type == "keyup" || ev.type == "touchend");
+  let evUp = ev.type == "keyup";
   let evDown = !evUp;
 
   if (ev.which == 32 || ev.which == 0) {
@@ -27,6 +25,33 @@ function handleTimer(ev) {
       timerState = 0;
       saveTime();
     }
+  }
+}
+
+document.getElementById("timerSection").addEventListener("touchstart", handleTouch);
+document.getElementById("timerSection").addEventListener("touchend", handleTouch);
+let touchStart;
+
+function handleTouch(ev) {
+  let maxDistance = 30;
+
+  switch (ev.type) {
+    case "touchstart":
+      if (timerState == 2)
+        stopTimer();
+      touchStart = { x: ev.changedTouches[0].pageX, y: ev.changedTouches[0].pageY };
+      break;
+    case "touchend":
+      let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
+                    y: touchStart.y - ev.changedTouches[0].pageY };
+      if (Math.abs(delta.x) < maxDistance &&
+          Math.abs(delta.y) < maxDistance &&
+          timerState == 0)
+            startTimer();
+      else if (timerState == 3) {
+          timerState = 0;
+          saveTime();
+      }
   }
 }
 
