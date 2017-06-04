@@ -140,17 +140,6 @@ function getAppDataFile() {
     );
 }
 
-function saveAppData(fileId, appData) {
-  return gapi.client.request({
-    path: '/upload/drive/v3/files/' + fileId,
-    method: 'PATCH',
-    params: {
-      uploadType: 'media'
-    },
-    body: String(JSON.stringify(appData))
-  });
-}
-
 function destroyDriveData() {
   getAppDataFile().then(function(res) {
     return gapi.client.request({
@@ -214,9 +203,45 @@ function driveCreateSave(callback) {
 }
 
 function driveSave(fileId, data, callback = function() {}) {
-  return saveAppData(fileId, data).then(function(res) {
-    callback();
+  return gapi.client.request({
+    path: '/upload/drive/v3/files/' + fileId,
+    method: 'PATCH',
+    params: {
+      uploadType: 'media'
+    },
+    body: String(JSON.stringify(data))
+  })
+}
+
+function syncTimes() {
+  // Sync first
+  getAppDataFile().then(function(res) {
+    if (res.fileId) {
+      getAppDataFileContent(res.fileId).then(function(res) {
+        if (!res.appData) { return; }
+        let other = res.appData;
+        save.sessions[currentSession][currentPuzzle].times = mergeSessionTimes(save, other);
+      });
+    }
+
+    // Then save
+    return gapi.client.request({
+      path: '/upload/drive/v3/files/' + res.fileId,
+      method: 'PATCH',
+      params: {
+        uploadType: 'media'
+      },
+      body: String(JSON.stringify(save))
+    }).then(function() {
+      populateTimesDrawer();
+    });
   });
+}
+
+function mergeSessionTimes(first, second) {
+  first = first.sessions[currentSession][currentPuzzle].times;
+  second = second.sessions[currentSession][currentPuzzle].times;
+  return first.jsonUniqueMerge(second).sortBy("started_at");
 }
 
 handleClientLoad();
