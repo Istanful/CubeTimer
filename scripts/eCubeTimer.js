@@ -33,7 +33,7 @@ document.getElementById("timerSection").addEventListener("touchend", handleTouch
 let touchStart;
 
 function handleTouch(ev) {
-  let maxDistance = 30;
+  let maxDistance = 10;
 
   switch (ev.type) {
     case "touchstart":
