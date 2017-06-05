@@ -214,6 +214,12 @@ function driveSave(fileId, data, callback = function() {}) {
 }
 
 function syncTimes() {
+  // If offline mode just save to localStorage
+  if (!isAuthorized) {
+    saveProgress();
+    return;
+  }
+
   // Sync first
   getAppDataFile().then(function(res) {
     if (res.fileId) {
