@@ -228,6 +228,7 @@ function syncTimes() {
       getAppDataFileContent(res.fileId).then(function(res) {
         if (!res.appData) { return; }
         let other = res.appData;
+        console.log(mergeSessionTimes(save, other));
         save.sessions[currentSession][currentPuzzle].times = mergeSessionTimes(save, other);
       });
     }
@@ -249,7 +250,7 @@ function syncTimes() {
 function mergeSessionTimes(first, second) {
   first = first.sessions[currentSession][currentPuzzle].times;
   second = second.sessions[currentSession][currentPuzzle].times;
-  return first.jsonUniqueMerge(second);
+  return first.jsonUniqueMerge(second).sortBy("started_at");
 }
 
 handleClientLoad();

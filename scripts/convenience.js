@@ -57,6 +57,16 @@ Array.prototype.jsonUniqueMerge = function(second) {
   return all;
 }
 
+Array.prototype.sortBy = function(property) {
+  return this.sort(function(a, b) {
+    if (a[property] < b[property])
+      return -1;
+    else if (a[property] > b[property])
+      return 1;
+    return 0;
+  });
+}
+
 Date.prototype.format = function() {
   return this.getDate() + "/" + this.getDay() + "/" + this.getFullYear();
 }
