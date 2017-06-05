@@ -155,6 +155,7 @@ function deleteSession(name) {
   createOrChooseSession(session || defaultSessionName);
   updateSelectValues("session", save.sessions, session);
   updateStats();
+  saveProgress();
 }
 
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {

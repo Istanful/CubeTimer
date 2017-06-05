@@ -196,7 +196,7 @@ function driveSaveOrCreate() {
 }
 
 function driveCreateSave(callback) {
-  save = getEmptySave();
+  save = save || getEmptySave();
   createAppDataFile().then(function(res) {
     driveSave(res.fileId, save, callback);
   });
@@ -210,7 +210,9 @@ function driveSave(fileId, data, callback = function() {}) {
       uploadType: 'media'
     },
     body: String(JSON.stringify(data))
-  })
+  }).then(function(res) {
+    console.log(res.status == 200 ? "Succesfully saved to drive" : "Failed to save to drive");
+  });
 }
 
 function syncTimes() {
