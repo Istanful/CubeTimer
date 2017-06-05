@@ -228,7 +228,6 @@ function syncTimes() {
       getAppDataFileContent(res.fileId).then(function(res) {
         if (!res.appData) { return; }
         let other = res.appData;
-        console.log(mergeSessionTimes(save, other));
         save.sessions[currentSession][currentPuzzle].times = mergeSessionTimes(save, other);
       });
     }

@@ -21,38 +21,35 @@ body {
                                   supported by Chrome and Opera */
 }
 
-main, #drawer { float: left; position: relative; }
 main {
   position: relative;
-  width: 70%;
-  transition: transform 0.3s ease;
   text-align: center;
   height: 100%;
 }
 
+#timerSection, #drawer {
+  width: 100%;
+  display: block;
+  float: right;
+  height: 100vh;
+ }
+
+ #times {
+   height: 500px;
+ }
+
+ #statsSection {
+   box-sizing: border-box;
+}
+
 #drawer {
-  width: 30%;
   height: 100%;
   background: #204466;
   z-index: 1;
-  transition: transform 0.3s ease;
   padding: 20px;
   position: relative;
   box-sizing: border-box;
   text-align: center;
-}
-
-#drawer::after {
-  position: absolute;
-  content: "";
-  right: 100%;
-  top: 0;
-  height: 100%;
-  width: 10px;
-}
-
-#drawer > * {
-  /*margin-bottom: 20px;*/
 }
 
 .hideDrawer {
@@ -71,17 +68,6 @@ main {
   background: #173048;
   padding: 10px;
   position: relative;
-  transition: all 0.3s;
-}
-
-.selectOption {
-  display: block;
-  text-align: center;
-}
-
-.btn:hover, .select:hover, .selectOption:hover {
-  transform: scale(1.1);
-  box-shadow: -2px 2px 5px rgba(0,0,0,0.4);
 }
 
 .shadow {
@@ -99,7 +85,7 @@ main {
   width: 100%;
   left: 0;
   background: inherit;
-  z-index: 2;
+  z-index: 1;
 }
 
 #timer {
@@ -118,11 +104,10 @@ main {
   display: inline-block;
   text-align: left;
   text-indent: none;
-  max-width: 50%;
+  max-width: 80%;
 }
 
 #times {
-  z-index: -1;
   padding: 0;
   list-style-type: none;
   height: 250px;
@@ -130,19 +115,7 @@ main {
   width: 100%;
   position: relative;
   margin: 0;
-}
-
-#timesShadow {
-  margin-bottom: -50px; /* To not affect the flow */
-  z-index: 1;
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 50px;
-  left: 0;
-  top: -50px;
-  background: -webkit-linear-gradient(bottom, #204466, rgba(0,0,0,0));
-  background: linear-gradient(bottom, #204466, rgba(0,0,0,0));
+  z-index: -1;
 }
 
 #times li {
@@ -156,15 +129,11 @@ main {
   background: #38638e;
 }
 
-#times li.slide {
-  transform: translate(0, 0);
-  transition: transform 0.2s;
-}
-
 #times .delete-time {
   cursor: pointer;
   float: right;
 }
+
 #stats {
   text-align: left;
 }
@@ -177,22 +146,37 @@ main {
   padding: 20px;
 }
 
-@media (max-width: 1270px) {
+@media (min-width: 1270px) {
+  main, #drawer { float: left !important; position: relative; }
 
-  #timerSection, #drawer {
-    width: 100%;
+  main {
+    width: 70% !important;
+    transition: transform 0.3s ease;
+  }
+
+  #drawer {
+    width: 30%;
+    transition: transform 0.3s ease;
+  }
+
+  .btn, .select, .selectOption { transition: all 0.3s; }
+
+  .selectOption {
     display: block;
-    float: right;
-    height: 100vh;
-   }
+    text-align: center;
+  }
 
-   #times {
-     height: 500px;
-   }
+  .btn:hover, .select:hover, .selectOption:hover {
+    transform: scale(1.1);
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.4);
+  }
 
-   #statsSection {
-     box-sizing: border-box;
-   }
+  #scramble { max-width: 50%; }
+
+  #times li.slide {
+    transform: translate(0, 0);
+    transition: transform 0.2s;
+  }
 }
 
 .col-1 { width: calc(25%/3); }
