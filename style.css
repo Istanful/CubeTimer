@@ -1,6 +1,6 @@
 html { font-size: 14px; }
 
-html, body { height: 100%; }
+html, body { height: 100%; overflow-x: hidden; }
 
 body {
   position: relative;
@@ -112,7 +112,7 @@ main {
   padding: 0;
   list-style-type: none;
   height: 250px;
-  overflow: scroll;
+  overflow-y: scroll;
   width: 100%;
   position: relative;
   margin: 0;

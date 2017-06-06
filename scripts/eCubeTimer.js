@@ -123,12 +123,10 @@ function populateTimesDrawer() {
 }
 
 function initializeTimer() {
-  updateStats();
+  createOrChooseSession(currentSession);
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
   $("#resetSession").click(function() { promptResetSession(currentSession) });
-  updateScramble();
-  populateTimesDrawer();
 }
 
 function promptNewSession() {
@@ -175,6 +173,7 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
 
   populateTimesDrawer();
   updateScramble();
+  updateStats();
 }
 
 function getStats(options = {}) {
