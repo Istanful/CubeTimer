@@ -1,6 +1,7 @@
 let defaultMoves = "R L F B D U ";
-let wideMoves = defaultMoves.toLowerCase();
-let threeWide = wideMoves.split(" ").map(function(el) { return 3 + el}).join(" ") + " ";
+let signWideMoves = defaultMoves.toLowerCase();
+let wcaWideMoves = defaultMoves.split(" ").map(function(el) { return el + "w"; }).join(" ") + " ";
+let threeWide = signWideMoves.split(" ").map(function(el) { return 3 + el; }).join(" ") + " ";
 
 let scramblers = {
   "2x2x2": function() {
@@ -10,16 +11,22 @@ let scramblers = {
     return randomMoves();
   },
   "4x4x4": function() {
-    return randomMoves(40, defaultMoves + wideMoves);
+    let notation = saveAccess("options.scrambling.4x4x4.notation", "WCA");
+    switch (notation) {
+      case "sign":
+        return randomMoves(40, defaultMoves + signWideMoves);
+      default:
+        return randomMoves(40, defaultMoves + wcaWideMoves);
+    }
   },
   "5x5x5": function() {
-    return randomMoves(60, defaultMoves + wideMoves);
+    return randomMoves(60, defaultMoves + signWideMoves);
   },
   "6x6x6": function() {
-    return randomMoves(80, defaultMoves + wideMoves + threeWide);
+    return randomMoves(80, defaultMoves + signWideMoves + threeWide);
   },
   "7x7x7": function() {
-    return randomMoves(100, defaultMoves + wideMoves + threeWide);
+    return randomMoves(100, defaultMoves + signWideMoves + threeWide);
   },
   skewb: function() {
     return randomMoves(11);
