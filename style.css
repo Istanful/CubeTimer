@@ -85,8 +85,9 @@ main {
   width: 100%;
   left: 0;
   background: inherit;
-  z-index: 1;
 }
+
+.select.selecting { z-index: 100; }
 
 #timer {
   position: absolute;
