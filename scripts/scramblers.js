@@ -13,14 +13,19 @@ let scramblers = {
   "4x4x4": function() {
     let notation = saveAccess("options.scrambling.4x4x4.notation", "WCA");
     switch (notation) {
-      case "sign":
+      case "SiGN":
         return randomMoves(40, defaultMoves + signWideMoves);
       default:
         return randomMoves(40, defaultMoves + wcaWideMoves);
     }
   },
   "5x5x5": function() {
-    return randomMoves(60, defaultMoves + signWideMoves);
+    let notation = saveAccess("options.scrambling.4x4x4.notation", "WCA");
+    switch (notation) {
+      case "SiGN":
+        return randomMoves(60, defaultMoves + signWideMoves);
+      default:
+        return randomMoves(60, defaultMoves + wcaWideMoves);
   },
   "6x6x6": function() {
     return randomMoves(80, defaultMoves + signWideMoves + threeWide);
