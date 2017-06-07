@@ -26,6 +26,7 @@ let scramblers = {
         return randomMoves(60, defaultMoves + signWideMoves);
       default:
         return randomMoves(60, defaultMoves + wcaWideMoves);
+    }
   },
   "6x6x6": function() {
     return randomMoves(80, defaultMoves + signWideMoves + threeWide);
@@ -34,7 +35,7 @@ let scramblers = {
     return randomMoves(100, defaultMoves + signWideMoves + threeWide);
   },
   skewb: function() {
-    return randomMoves(11);
+    return randomMoves(11, "F R B L", "' ");
   },
   megaminx: function() {
     let scramble = "";
@@ -47,7 +48,7 @@ let scramblers = {
   }
 }
 
-function randomMoves(count = 19, availableMoves = defaultMoves) {
+function randomMoves(count = 19, availableMoves = defaultMoves, modifiers = "' 2") {
   let scramble = "";
   let lastMove = "";
   availableMoves = availableMoves.split(" ");
@@ -56,7 +57,7 @@ function randomMoves(count = 19, availableMoves = defaultMoves) {
     let move = lastMove;
     while (lastMove.includes(move))
       move = availableMoves.random();
-    move += [" ", "' ", "2 "].random();
+    move += modifiers.split(" ").random() + " ";
     lastMove = move;
     scramble += move;
   }
