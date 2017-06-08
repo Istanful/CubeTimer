@@ -68,7 +68,7 @@ Array.prototype.sortBy = function(property) {
 }
 
 Date.prototype.format = function() {
-  return this.getDate() + "/" + this.getDay() + "/" + this.getFullYear();
+  return this.getMonth() + 1 + "/" + this.getDate() + "/" + this.getFullYear();
 }
 
 Number.prototype.formatTime = function() {
