@@ -209,9 +209,9 @@ function getStats(options = {}) {
   stats += options.worst || "Worst: " + times.max("duration").formatTime() + "\n";
 
   for (let i = 0; i < averages.length; i++) {
-    stats += options.bestAvg || "Best avg" + averages[i] + ": " + bestAverage(averages[i]).formatTime() + "\n";
     let current = getAverage(times.length - averages[i], times.length).formatTime();
     stats += options.currentAvg || "Current avg" + averages[i] + ": " + current + "\n"
+    stats += options.bestAvg || "Best avg" + averages[i] + ": " + bestAverage(averages[i]).formatTime() + "\n";
   }
   stats += options.sessionAvg || "Session average: " + getAverage(0, times.length).formatTime();
   return stats;
