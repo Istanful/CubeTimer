@@ -58,13 +58,18 @@ function handleTouch(ev) {
 function startTimer() {
   lastTimeStarted = new Date().getTime();
   lastTimeDuration = null;
-  timerIntervalId = setInterval(updateTimer, 10);
+  if (saveAccess("options.timerUpdating", true) == true)
+    timerIntervalId = setInterval(updateTimer, 10);
+  else
+    $("#time").text("Running");
   timerState = 2;
 }
 
 function stopTimer() {
-  clearInterval(timerIntervalId);
+  if (saveAccess("options.timerUpdating", true) == true)
+    clearInterval(timerIntervalId);
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
+  $("#time").text(formatTime(lastTimeDuration));
   updateScramble();
   saveProgress();
   timerState = 3;
@@ -184,13 +189,13 @@ function saveAccess(keys, defaultValue = {}) {
 
 function accessNext(obj, keys, index, value) {
   let key = keys[index];
-  if (!obj[key] && index < keys.length - 1) {
+  if (typeof obj[key] == 'undefined' && index < keys.length - 1) {
     obj[key] = {};
     return accessNext(obj[key], keys, index + 1, value);
   }
-  else if (obj[key] && index < keys.length - 1)
+  else if (typeof obj[key] != 'undefined' && index < keys.length - 1)
     return accessNext(obj[key], keys, index + 1, value);
-  else if (!obj[key] && index == keys.length - 1) {
+  else if (typeof obj[key] == 'undefined' && index == keys.length - 1) {
     obj[key] = value;
     return obj[key];
   }
