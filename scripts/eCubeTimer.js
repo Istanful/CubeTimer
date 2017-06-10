@@ -114,7 +114,7 @@ function saveTime() {
 }
 
 function populateTimesDrawer() {
-  let times = save.sessions[currentSession][currentPuzzle].times;
+  let times = saveAccess(`sessions.${currentSession}.${currentPuzzle}.times`, []);
   $("#times").empty();
 
   for (let i = 0; i < times.length; i++) {
@@ -174,6 +174,28 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   populateTimesDrawer();
   updateScramble();
   updateStats();
+}
+
+// Access or create key
+function saveAccess(keys, defaultValue = {}) {
+  keys = keys.split(".");
+  return accessNext(save, keys, 0, defaultValue);
+}
+
+function accessNext(obj, keys, index, value) {
+  let key = keys[index];
+  if (!obj[key] && index < keys.length - 1) {
+    obj[key] = {};
+    return accessNext(obj[key], keys, index + 1, value);
+  }
+  else if (obj[key] && index < keys.length - 1)
+    return accessNext(obj[key], keys, index + 1, value);
+  else if (!obj[key] && index == keys.length - 1) {
+    obj[key] = value;
+    return obj[key];
+  }
+  else
+    return obj[key];
 }
 
 function getStats(options = {}) {

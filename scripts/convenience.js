@@ -2,6 +2,11 @@ Array.prototype.random = function() {
   return this[Math.round((this.length - 1) * Math.random())];
 }
 
+Array.prototype.randomNot = function(value) {
+  let newValue;
+  while ((newValue = this.random()) == value) {}
+  return newValue;
+}
 Array.prototype.last = function() {
   return this[this.length - 1];
 }
@@ -73,6 +78,10 @@ Date.prototype.format = function() {
 
 Number.prototype.formatTime = function() {
   return formatTime(this);
+}
+
+function randomRange(a, b) {
+  return Math.round(a + (Math.random() * (b - a)))
 }
 
 String.prototype.break = function() {

@@ -37,10 +37,10 @@ function loadScript(fileName, callback) {
 }
 
 let scripts = [
+  "convenience.js",
   "cubeTimerGUI.js",
   "scramblers.js",
   "authorisation.js",
-  "convenience.js",
   "eCubeTimer.js"
 ];
 
