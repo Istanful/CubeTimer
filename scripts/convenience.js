@@ -2,6 +2,11 @@ Array.prototype.random = function() {
   return this[Math.round((this.length - 1) * Math.random())];
 }
 
+Array.prototype.randomNot = function(value) {
+  let newValue;
+  while ((newValue = this.random()) == value) {}
+  return newValue;
+}
 Array.prototype.last = function() {
   return this[this.length - 1];
 }

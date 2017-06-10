@@ -40,116 +40,17 @@ let scramblers = {
   pyraminx: function() {
     return randomMoves(8) + randomUnique(Math.ceil(Math.random() * 4), "l b u r", "' ")
   },
-  /*
-
-  function execSet(moves) {
-    for (let b = 0; b < Math.abs(moves[0]); b++) {
-      console.log("execing moves")
-      if (moves[0] < 0)
-        squareui();
-      else
-        squareu();
-    }
-
-    for (let b = 0; b < Math.abs(moves[0]); b++) {
-          if (moves[1] < 0)
-        squaredi();
-      else
-        squared();
-    }
-    kiir();
-
-    setTimeout(function() { sqtryslice(); kiir(); }, 1000);
-  }
-
-  function execute(scramble) {
-    scramble = scramble.slice(0, scramble.length - 1);
-  	let sets = scramble.split("/");
-
-  	for (let a = 0; a < sets.length; a++) {
-      let moves = sets[a].split(",");
-  		moves[0] = parseInt(moves[0].replace("(", ""));
-  		moves[1] = parseInt(moves[1].replace(")", ""));
-
-      setTimeout(function() { execSet(moves) }, a * 1000);
-  	}
-  }
-
-  */
   "square-1": function() {
     let state = { upper: [2, 1, 2, 1, 2, 1, 2, 1], lower: [1, 2, 1, 2, 1, 2, 1, 2] }
     let moves = "";
 
-    let available = function(face) {
-      let turns = [];
-      let leftSum;
-      for (let i = 0; i < face.length; i++) {
-        index = i;
-        leftSum = 0;
-        rightSum = 0;
-        while (leftSum < 6) {
-          leftSum += face[index];
-          index = (index + 1)%face.length
-        }
-
-        if (leftSum == 6) {
-          let leftMove = face.slice(0, i).sum();
-          let rightMove = face.slice(i, face.length).sum();
-          turns.push(-leftMove);
-        }
-      }
-      return turns;
-    }
-
-    let turn = function(face, sum) {
-      sum = Math.abs(sum)
-      let currentSum = index = 0;
-
-      while (currentSum < sum) {
-        currentSum += face[index];
-        index++;
-      }
-
-      return face.slice(index, face.length).concat(face.slice(0, index));
-    }
-
-    let slice = function(state) {
-      let upperLeft = [];
-      let upperRight = [];
-      let lowerLeft = [];
-      let lowerRight = [];
-
-      let sum = 0;
-      for (let i = 0; i < state.upper.length; i++) {
-        if (sum < 6) {
-          sum += state.upper[i];
-          upperLeft.push(state.upper[i]);
-        }
-        else
-          upperRight.push(state.upper[i]);
-      }
-
-      sum = 0;
-      for (let i = 0; i < state.lower.length; i++) {
-        if (sum < 6) {
-          sum += state.lower[i];
-          lowerLeft.push(state.lower[i]);
-        }
-        else
-          lowerRight.push(state.lower[i]);
-      }
-
-      state.upper = upperLeft.concat(lowerRight);
-      state.lower = lowerLeft.concat(upperRight);
-    }
-
     for (let i = 0; i < 12; i++) {
-      let u = available(state.upper).random();
-      let d = available(state.lower).random();
+      let u = sq1Available(state.upper).random();
+      let d = u == 0 ? sq1Available(state.lower).randomNot(0) : sq1Available(state.lower).random();
       moves += "(" + u + ", " + d + ")/";
-      state.upper = turn(state.upper, u);
-      state.lower = turn(state.lower, d);
-      slice(state)
+      state.upper = sq1Turn(state.upper, u);
+      state.lower = sq1Turn(state.lower, d);
+      sq1Slice(state);
     }
 
     return moves;
@@ -193,4 +94,120 @@ function randomMoves(count = 19, availableMoves = defaultMoves, modifiers = "' 2
     scramble += move;
   }
   return scramble;
+}
+
+/*
+
+// Test square one scramble
+function testScramble(scramble) {
+  let success = true;
+  thinkandreset();
+  scramble = scramble.slice(0, scramble.length - 1);
+  let sets = scramble.split("/");
+
+  for (let a = 0; a < sets.length; a++) {
+    console.log(sets[a]);
+      let moves = sets[a].split(",");
+      moves[0] = parseInt(moves[0].replace("(", ""));
+      moves[1] = parseInt(moves[1].replace(")", ""));
+
+    for (let b = 0; b < Math.abs(moves[0]); b++)
+      if (moves[0] < 0)
+        squareui();
+      else
+        squareu();
+    for (let b = 0; b < Math.abs(moves[1]); b++)
+      if (moves[1] < 0)
+        squaredi();
+      else
+        squared();
+    let sliced = sqtryslice();
+    if (sliced == 0) {
+      kiir();
+      console.log(":(");
+      return;
+        }
+    console.log(sliced == 1 ? "Succesfully sliced" : "Failed to slice");
+    kiir();
+    }
+  console.log(":)");
+}
+
+*/
+
+function sq1Available(face) {
+  let turns = [];
+  let leftSum;
+  for (let i = 0; i < face.length; i++) {
+    index = i;
+    leftSum = 0;
+    rightSum = 0;
+    while (leftSum < 6) {
+      leftSum += face[index];
+      index = (index + 1);
+    }
+
+    if (leftSum == 6) {
+      let leftMove = face.slice(0, i).sum();
+      let rightMove = face.slice(index, face.length).sum();
+      if (leftMove > rightMove)
+        turns.push(rightMove)
+      else
+        turns.push(-leftMove);
+    }
+  }
+
+  return turns;
+}
+
+function sq1Turn(face, sum) {
+  let clockwise = sum > 0;
+  let index = clockwise ? face.length - 1 : 0;
+  let absSum = Math.abs(sum);
+  let currentSum = 0;
+
+  while (currentSum < absSum) {
+    currentSum += face[index];
+    index = clockwise ? (index - 1) : (index + 1);
+  }
+
+  let newFace;
+  if (clockwise) {
+    newFace = face.slice(index+1, face.length).concat(face.slice(0, index+1));
+  }
+  else {
+    newFace = face.slice(index, face.length).concat(face.slice(0, index));
+  }
+
+  return newFace;
+}
+
+function sq1Slice(state) {
+  let upperLeft = [];
+  let upperRight = [];
+  let lowerLeft = [];
+  let lowerRight = [];
+
+  let sum = 0;
+  for (let i = 0; i < state.upper.length; i++) {
+    if (sum < 6) {
+      sum += state.upper[i];
+      upperLeft.push(state.upper[i]);
+    }
+    else
+      upperRight.push(state.upper[i]);
+  }
+
+  sum = 0;
+  for (let i = 0; i < state.lower.length; i++) {
+    if (sum < 6) {
+      sum += state.lower[i];
+      lowerLeft.push(state.lower[i]);
+    }
+    else
+      lowerRight.push(state.lower[i]);
+  }
+
+  state.upper = upperLeft.concat(lowerRight);
+  state.lower = lowerLeft.concat(upperRight);
 }
