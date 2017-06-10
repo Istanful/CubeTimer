@@ -1,4 +1,3 @@
-
 function updateScramble() {
   currentScramble = scramblers[currentPuzzle]().break();
   $("#scramble").html(currentScramble);
@@ -68,4 +67,13 @@ function populateSessionSelects() {
 function updateStats() {
   let stats = getStats().break();
   $("#stats").html(stats);
+  alignTimerSection();
 }
+
+function alignTimerSection() {
+  let statsHeight = document.getElementById("statsSection").offsetHeight;
+  let newHeight = window.innerHeight - statsHeight;
+  document.getElementById("timerSection").style.height = newHeight + "px";
+}
+$(window).resize(alignTimerSection);
+$("#statsSection").resize(alignTimerSection);

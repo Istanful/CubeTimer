@@ -27,19 +27,16 @@ main {
   height: 100%;
 }
 
-#timerSection, #drawer {
+main, #drawer {
   width: 100%;
   display: block;
   float: right;
-  height: 100vh;
- }
+  height: 100%;
+  box-sizing: border-box;
+}
 
- #times {
-   height: 500px;
- }
-
- #statsSection {
-   box-sizing: border-box;
+#times {
+ height: 500px;
 }
 
 #drawer {
@@ -89,11 +86,19 @@ main {
 
 .select.selecting { z-index: 100; }
 
+#timerSection {
+  float: right;
+  width: 100%;
+  position: relative;
+}
+
 #timer {
   position: absolute;
   top: 50%;
-  width: 100%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   min-height: 200px;
+  width: 90%;
 }
 
 #time {
@@ -140,7 +145,8 @@ main {
 }
 
 #statsSection {
-  position: absolute;
+  box-sizing: border-box;
+  float: right;
   top: 0;
   background: #c14444;
   width: 100%;
@@ -172,7 +178,7 @@ main {
     box-shadow: -2px 2px 5px rgba(0,0,0,0.4);
   }
 
-  #scramble { max-width: 50%; }
+  #scramble { max-width: 50%; }
 
   #times li.slide {
     transform: translate(0, 0);
