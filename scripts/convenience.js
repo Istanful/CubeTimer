@@ -80,6 +80,10 @@ Number.prototype.formatTime = function() {
   return formatTime(this);
 }
 
+function randomRange(a, b) {
+  return Math.round(a + (Math.random() * (b - a)))
+}
+
 String.prototype.break = function() {
   return this.replace(/\n/g, "<br />");
 }

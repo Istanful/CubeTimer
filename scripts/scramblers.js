@@ -55,6 +55,26 @@ let scramblers = {
 
     return moves;
   },
+  clock: function() {
+    let notation = saveAccess("options.scrambling.clock.notation", "WCA");
+    let moves = "";
+
+    switch (notation) {
+      default:
+        let firstFacePins = ("UR DR DL UL U R D L ALL").split(" ");
+        let secondFacePins = ("U R D L ALL").split(" ");
+        for (let i = 0; i < firstFacePins.length + secondFacePins.length; i++) {
+          if (i < firstFacePins.length)
+            moves += firstFacePins[i] + randomRange(0, 6) + ["+", "-"].random() + "&#9;&#9;";
+          else if (i == firstFacePins.length)
+            moves += "y2"
+          else
+            moves += secondFacePins[i - firstFacePins.length] + randomRange(0, 6) + ["+", "-"].random() + "&#9;&#9;";
+        }
+        moves += "UR DR UL";
+        return moves;
+    }
+  },
   megaminx: function() {
     let scramble = "";
     for (let r = 0; r < 7; r++) {
