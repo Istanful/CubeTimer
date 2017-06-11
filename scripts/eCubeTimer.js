@@ -1,7 +1,5 @@
-let defaultPuzzle = "3x3x3";
-let defaultSessionName = "Main";
-let currentPuzzle = defaultPuzzle;
-let currentSession = defaultSessionName;
+let currentPuzzle;
+let currentSession;
 
 let currentScramble;
 let lastTimeStarted;
@@ -128,6 +126,8 @@ function populateTimesDrawer() {
 }
 
 function initializeTimer() {
+  currentPuzzle = saveAccess("lastPuzzle", "3x3x3");
+  currentSession = saveAccess("lastSession", "Main");
   createOrChooseSession(currentSession);
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
@@ -164,6 +164,7 @@ function deleteSession(name) {
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
   currentSession = session;
   currentPuzzle = puzzle;
+  saveCurrentSession();
 
   if (!save.sessions[session]) {
     save.sessions[session] = {};
@@ -248,4 +249,9 @@ function deleteTime(index, session = currentSession, puzzle = currentPuzzle) {
   populateTimesDrawer();
   updateStats();
   saveProgress();
+}
+
+function saveCurrentSession() {
+  save.lastPuzzle = currentPuzzle;
+  save.lastSession = currentSession;
 }
