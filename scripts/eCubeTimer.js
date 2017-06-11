@@ -1,3 +1,5 @@
+let defaultSessionName = "Main";
+let defaultPuzzle = "3x3x3";
 let currentPuzzle;
 let currentSession;
 
@@ -126,8 +128,8 @@ function populateTimesDrawer() {
 }
 
 function initializeTimer() {
-  currentPuzzle = saveAccess("lastPuzzle", "3x3x3");
-  currentSession = saveAccess("lastSession", "Main");
+  currentPuzzle = saveAccess("lastPuzzle", defaultPuzzle);
+  currentSession = saveAccess("lastSession", defaultSessionName);
   createOrChooseSession(currentSession);
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
