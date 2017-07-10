@@ -1,4 +1,4 @@
-let defaultMoves = "R L F B D U ";
+let defaultMoves = "R L F B D U";
 let signWideMoves = defaultMoves.toLowerCase();
 let wcaWideMoves = defaultMoves.split(" ").map(function(el) { return el + "w"; }).join(" ") + " ";
 let threeWide = signWideMoves.split(" ").map(function(el) { return 3 + el; }).join(" ") + " ";
