@@ -8,6 +8,9 @@ let lastTimeStarted;
 let lastTimeDuration;
 let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
+let defaultStartKeys = [32, 0];
+let defaultStopKeys = Array.apply(null, Array(26)).map(function(_, i) { return i + 65; });
+
 
 document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
@@ -16,16 +19,23 @@ function handleTimer(ev) {
   let evUp = ev.type == "keyup";
   let evDown = !evUp;
 
-  if (ev.which == 32 || ev.which == 0) {
-    if (timerState == 0 && evUp)
-      startTimer();
-    else if (timerState == 2 && evDown)
-      stopTimer();
-    else if (timerState == 3 && evUp) {
-      timerState = 0;
-      saveTime();
-    }
+  if (startKeys().contains(ev.which) && timerState == 0 && evUp)
+    startTimer();
+  else if (stopKeys().contains(ev.which) && timerState == 2 && evDown)
+    stopTimer();
+  else if (stopKeys().contains(ev.which) && timerState == 3 && evUp) {
+    timerState = 0;
+    saveTime();
   }
+}
+
+function stopKeys() {
+  let defaultKeys = defaultStopKeys.concat(defaultStartKeys);
+  return saveAccess("options.stopKeys", defaultKeys);
+}
+
+function startKeys() {
+  return saveAccess("options.startKeys", defaultStartKeys);
 }
 
 document.getElementById("timerSection").addEventListener("touchstart", handleTouch);
@@ -202,8 +212,7 @@ function accessNext(obj, keys, index, value) {
     obj[key] = value;
     return obj[key];
   }
-  else
-    return obj[key];
+  return obj[key];
 }
 
 function getStats(options = {}) {

@@ -39,6 +39,13 @@ Array.prototype.sum = function(property) {
   return sum;
 }
 
+Array.prototype.contains = function(element) {
+ for (let i = 0; i < this.length; i++)
+    if (this[i] == element)
+      return true;
+  return false;
+}
+
 Array.prototype.range = function(start, end) {
   let collection = [];
   for (let i = start; i < end; i++)

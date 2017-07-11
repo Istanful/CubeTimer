@@ -97,6 +97,7 @@ function getEmptySave() {
   save.sessions[defaultSessionName] = {};
   save.sessions[defaultSessionName][defaultPuzzle] = {};
   save.sessions[defaultSessionName][defaultPuzzle].times = [];
+  save.options = {};
   return save;
 }
 
