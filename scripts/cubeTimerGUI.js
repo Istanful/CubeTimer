@@ -3,7 +3,7 @@ function updateScramble() {
   $("#scramble").html(currentScramble);
 }
 
-function buildTimeMarkup(time, index) {
+function buildTimeMarkup(time, date) {
   let li = document.createElement("li");
   li.innerHTML = "<span style='float: left'>" + formatTime(time.duration) + "</span>" +
                  "<span>" + new Date(time.started_at).format() + "</span>" +
@@ -11,9 +11,18 @@ function buildTimeMarkup(time, index) {
   li.childNodes[li.childNodes.length - 1].addEventListener("click", function(el) {
     let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
     if (confirmed)
-      deleteTime(index);
+      deleteTime(date);
   });
   return li;
+}
+
+function populateTimesDrawer() {
+  let times = saveAccess(`sessions.${currentSession}.${currentPuzzle}.times`, []);
+  $("#times").empty();
+
+  for (let i = 0; i < times.length; i++) {
+    $("#times").prepend(buildTimeMarkup(times[i], times[i].started_at));
+  }
 }
 
 function closeSelects() {

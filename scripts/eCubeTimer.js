@@ -125,15 +125,6 @@ function saveTime() {
   updateStats();
 }
 
-function populateTimesDrawer() {
-  let times = saveAccess(`sessions.${currentSession}.${currentPuzzle}.times`, []);
-  $("#times").empty();
-
-  for (let i = 0; i < times.length; i++) {
-    $("#times").prepend(buildTimeMarkup(times[i], i));
-  }
-}
-
 function initializeTimer() {
   currentPuzzle = saveAccess("lastPuzzle", defaultPuzzle);
   currentSession = saveAccess("lastSession", defaultSessionName);
@@ -252,8 +243,8 @@ function calcAverage(times) {
   return sum / [times.length - 2, 1].max();
 }
 
-function deleteTime(index, session = currentSession, puzzle = currentPuzzle) {
-  save.sessions[session][puzzle].times.splice(index, 1);
+function deleteTime(date, session = currentSession, puzzle = currentPuzzle) {
+  save.sessions[session][puzzle].times.remove(date, "started_at");
   populateTimesDrawer();
   updateStats();
   saveProgress();

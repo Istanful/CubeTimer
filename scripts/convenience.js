@@ -87,6 +87,13 @@ Number.prototype.formatTime = function() {
   return formatTime(this);
 }
 
+Array.prototype.remove = function(element, property) {
+  for (let i = 0; i < this.length; i++) {
+    if ((this[i][property] || this[i]) == element)
+      this.splice(i, 1);
+  }
+}
+
 function randomRange(a, b) {
   return Math.round(a + (Math.random() * (b - a)))
 }
