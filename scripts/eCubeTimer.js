@@ -9,8 +9,6 @@ let lastTimeDuration;
 let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
 let defaultStartKeys = [32, 0];
-let defaultStopKeys = Array.apply(null, Array(26)).map(function(_, i) { return i + 65; });
-
 
 document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
@@ -21,17 +19,16 @@ function handleTimer(ev) {
 
   if (startKeys().contains(ev.which) && timerState == 0 && evUp)
     startTimer();
-  else if (stopKeys().contains(ev.which) && timerState == 2 && evDown)
+  else if (willStopTimer(ev.which) && timerState == 2 && evDown)
     stopTimer();
-  else if (stopKeys().contains(ev.which) && timerState == 3 && evUp) {
+  else if (willStopTimer(ev.which) && timerState == 3 && evUp) {
     timerState = 0;
     saveTime();
   }
 }
 
-function stopKeys() {
-  let defaultKeys = defaultStopKeys.concat(defaultStartKeys);
-  return saveAccess("options.stopKeys", defaultKeys);
+function willStopTimer(keycode) {
+	return saveAccess("save.options.mashStop", true) || startKeys().contains(keycode);
 }
 
 function startKeys() {
