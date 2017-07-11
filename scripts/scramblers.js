@@ -1,7 +1,7 @@
-let defaultMoves = "R L F B D U";
-let signWideMoves = defaultMoves.toLowerCase();
-let wcaWideMoves = defaultMoves.split(" ").map(function(el) { return el + "w"; }).join(" ") + " ";
-let threeWide = signWideMoves.split(" ").map(function(el) { return 3 + el; }).join(" ") + " ";
+let defaultMoves = "R L F B D U ";
+let signWideMoves = "r l f b d u ";
+let wcaWideMoves = "Rw Lw Fw Bw Dw Uw ";
+let threeWide = "3r 3l 3f 3b 3d 3u ";
 
 let scramblers = {
   "2x2x2": function() {
@@ -11,8 +11,7 @@ let scramblers = {
     return randomMoves();
   },
   "4x4x4": function() {
-    let notation = saveAccess("options.scrambling.4x4x4.notation", "WCA");
-    switch (notation) {
+    switch (getNotation("4x4x4")) {
       case "SiGN":
         return randomMoves(40, defaultMoves + signWideMoves);
       default:
@@ -20,8 +19,7 @@ let scramblers = {
     }
   },
   "5x5x5": function() {
-    let notation = saveAccess("options.scrambling.4x4x4.notation", "WCA");
-    switch (notation) {
+    switch (getNotation("5x5x5", "WCA")) {
       case "SiGN":
         return randomMoves(60, defaultMoves + signWideMoves);
       default:
@@ -29,10 +27,20 @@ let scramblers = {
     }
   },
   "6x6x6": function() {
-    return randomMoves(80, defaultMoves + signWideMoves + threeWide);
+    switch (getNotation("6x6x6", "prefix")) {
+      case "SiGN":
+        return randomMoves(80, defaultMoves + signWideMoves + threeWide);
+      case "prefix":
+        return randomMoves(80, defaultMoves, "' ", "3 2 ");
+    }
   },
   "7x7x7": function() {
-    return randomMoves(100, defaultMoves + signWideMoves + threeWide);
+    switch (getNotation("7x7x7", "prefix")) {
+      case "SiGN":
+        return randomMoves(100, defaultMoves + signWideMoves + threeWide);
+      case "prefix":
+        return randomMoves(100, defaultMoves, "' ", "3 2 ");
+    }
   },
   skewb: function() {
     return randomMoves(11, "F R B L", "' ");
@@ -56,10 +64,9 @@ let scramblers = {
     return moves;
   },
   clock: function() {
-    let notation = saveAccess("options.scrambling.clock.notation", "WCA");
     let moves = "";
 
-    switch (notation) {
+    switch (getNotation("clock")) {
       default:
         let firstFacePins = ("UR DR DL UL U R D L ALL").split(" ");
         let secondFacePins = ("U R D L ALL").split(" ");
@@ -100,7 +107,7 @@ function randomUnique(count = 4, availableMoves = defaultMoves, modifiers = "' 2
   return moves;
 }
 
-function randomMoves(count = 19, availableMoves = defaultMoves, modifiers = "' 2") {
+function randomMoves(count = 19, availableMoves = defaultMoves, modifiers = "' 2", prefixes = "") {
   let scramble = "";
   let lastMove = "";
   availableMoves = availableMoves.split(" ");
@@ -110,50 +117,16 @@ function randomMoves(count = 19, availableMoves = defaultMoves, modifiers = "' 2
     while (lastMove.includes(move))
       move = availableMoves.random();
     move += modifiers.split(" ").random() + " ";
+    move = prefixes.split(" ").random() + move;
     lastMove = move;
     scramble += move;
   }
   return scramble;
 }
 
-/*
-
-// Test square one scramble
-function testScramble(scramble) {
-  let success = true;
-  thinkandreset();
-  scramble = scramble.slice(0, scramble.length - 1);
-  let sets = scramble.split("/");
-
-  for (let a = 0; a < sets.length; a++) {
-    console.log(sets[a]);
-      let moves = sets[a].split(",");
-      moves[0] = parseInt(moves[0].replace("(", ""));
-      moves[1] = parseInt(moves[1].replace(")", ""));
-
-    for (let b = 0; b < Math.abs(moves[0]); b++)
-      if (moves[0] < 0)
-        squareui();
-      else
-        squareu();
-    for (let b = 0; b < Math.abs(moves[1]); b++)
-      if (moves[1] < 0)
-        squaredi();
-      else
-        squared();
-    let sliced = sqtryslice();
-    if (sliced == 0) {
-      kiir();
-      console.log(":(");
-      return;
-        }
-    console.log(sliced == 1 ? "Succesfully sliced" : "Failed to slice");
-    kiir();
-    }
-  console.log(":)");
+function getNotation(puzzle, defaultNotation = "WCA") {
+  return saveAccess("options.scrambling" + puzzle + "notation", defaultNotation);
 }
-
-*/
 
 function sq1Available(face) {
   let turns = [];

@@ -98,6 +98,7 @@ function getEmptySave() {
   save.sessions[defaultSessionName][defaultPuzzle] = {};
   save.sessions[defaultSessionName][defaultPuzzle].times = [];
   save.options = {};
+  save.options.startKeys = [32, 0];
   return save;
 }
 
