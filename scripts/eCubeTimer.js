@@ -131,7 +131,7 @@ function initializeTimer() {
   createOrChooseSession(currentSession);
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
-  $("#resetSession").click(function() { promptResetSession(currentSession) });
+  $("#resetSession").click(function() { promptClearSession(currentSession) });
 }
 
 function promptNewSession() {
@@ -140,20 +140,16 @@ function promptNewSession() {
     createOrChooseSession(name);
 }
 
-function promptResetSession(session) {
-  let categories = Object.keys(save.sessions[session]).join("\n");
-  let confirmed = confirm('Are you sure you want to delete the session "' + session + '"?\n\n' +
-                        'It will delete all times in the following categories: \n' +
-                        categories
-                        );
+function promptClearSession(session) {
+  let confirmed = confirm(`Are you sure you want to delete all ${currentPuzzle} times in "` + session + `"?`);
   if (confirmed) {
-    deleteSession(session);
+    clearSession(session);
     saveProgress();
   }
 }
 
-function deleteSession(name) {
-  delete save.sessions[name];
+function clearSession(name) {
+  save.sessions[name][currentPuzzle].times = [];
   let session = Object.keys(save.sessions)[0];
   createOrChooseSession(session || defaultSessionName);
   updateSelectValues("session", save.sessions, session);
