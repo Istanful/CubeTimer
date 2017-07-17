@@ -23,7 +23,6 @@ function handleTimer(ev) {
     stopTimer();
   else if (willStopTimer(ev.which) && timerState == 3 && evUp) {
     timerState = 0;
-    saveTime();
   }
 }
 
@@ -57,7 +56,6 @@ function handleTouch(ev) {
             startTimer();
       else if (timerState == 3) {
           timerState = 0;
-          saveTime();
       }
   }
 }
@@ -76,9 +74,9 @@ function stopTimer() {
   if (saveAccess("options.timerUpdating", true) == true)
     clearInterval(timerIntervalId);
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
+  addTime(lastTimeDuration, lastTimeStarted, currentScramble);
   $("#time").text(formatTime(lastTimeDuration));
-  updateScramble();
-  saveProgress();
+  syncTimes();
   timerState = 3;
 }
 
@@ -89,6 +87,7 @@ function updateTimer() {
 
 function formatTime(time) {
   if (time == -1) { return "N/A" }
+  time = +time;
   let cs = time % 1000;
   let s = time % (1000 * 60) - cs;
   let m = time - s - cs;
@@ -104,6 +103,7 @@ function formatTime(time) {
 }
 
 function parseTime(time) {
+  if (!isNaN(time)) { return time; }
   let regexMatch = time.match(/(?:(\d+):)*(\d+).(\d{2})/);
   let m = parseInt(regexMatch[1] || 0) * 60 * 1000;
   let s = parseInt(regexMatch[2] || 0) * 1000;
@@ -111,17 +111,22 @@ function parseTime(time) {
   return m + s + ms;
 }
 
-function saveTime() {
+function addTime(time, startedAt, scramble) {
+  duration = parseTime(time);
   times = save.sessions[currentSession][currentPuzzle].times;
   times.push(
     {
-      scramble: currentScramble,
-      started_at: lastTimeStarted,
-      duration: lastTimeDuration
+      scramble: scramble,
+      started_at: startedAt || (new Date().getTime() - duration),
+      duration: duration
     }
   );
-  $("#times").prepend(buildTimeMarkup(times.last(), times.length))
-  syncTimes();
+  updateView();
+}
+
+function updateView() {
+  updateScramble();
+  populateTimesDrawer();
   updateStats();
 }
 
@@ -173,9 +178,7 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
     save.sessions[session][puzzle].times = [];
   }
 
-  populateTimesDrawer();
-  updateScramble();
-  updateStats();
+  updateView();
 }
 
 // Access or create key
@@ -241,8 +244,7 @@ function calcAverage(times) {
 
 function deleteTime(date, session = currentSession, puzzle = currentPuzzle) {
   save.sessions[session][puzzle].times.remove(date, "started_at");
-  populateTimesDrawer();
-  updateStats();
+  updateView();
   saveProgress();
 }
 

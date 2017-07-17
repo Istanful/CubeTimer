@@ -87,6 +87,10 @@ Number.prototype.formatTime = function() {
   return formatTime(this);
 }
 
+String.prototype.formatTime = function() {
+  return formatTime(this);
+}
+
 Array.prototype.remove = function(element, property) {
   for (let i = 0; i < this.length; i++) {
     if ((this[i][property] || this[i]) == element)

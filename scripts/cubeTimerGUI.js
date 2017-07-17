@@ -47,6 +47,7 @@ function updateSelectValues(id, data, defaultOption, onSelection = function(el) 
     selectBody.prepend(buildOption(option, onSelection));
 }
 
+
 function buildOption(name, onSelection) {
   let option = document.createElement("div");
   option.className = "selectOption";
@@ -72,6 +73,19 @@ function populateSessionSelects() {
   populateSelect("puzzle", scramblers, currentPuzzle, clickSessionButton);
   populateSelect("session", save.sessions, currentSession, clickSessionButton);
 }
+
+function promptTimesImport() {
+  let times = window.prompt("Please enter the times to import separated by ','");
+  if (!times) { return; }
+  times = times.replace(/[^\d:.,\s]/g, "");  // Remove noise
+  times = times.split(",");                 // Split times
+  for (let i = times.length - 1; i >= 0; i-=1)
+    addTime(times[i]);
+    // addTime(times[i]);  // Adding times backwards since the newest imported is the last in the list
+
+  syncTimes();
+}
+$("#import-times").click(promptTimesImport);
 
 function updateStats() {
   let stats = getStats().break();
