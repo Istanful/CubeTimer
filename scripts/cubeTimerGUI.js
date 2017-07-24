@@ -7,11 +7,11 @@ function buildTimeMarkup(time, date) {
   let li = document.createElement("li");
   li.innerHTML = "<span style='float: left'>" + formatTime(time.duration) + "</span>" +
                  "<span>" + new Date(time.started_at).format() + "</span>" +
-                 "<span class='delete-time'>✕</span>";
-  li.childNodes[li.childNodes.length - 1].addEventListener("click", function(el) {
+                 "<span class='delete-time' data-date='" + date + "'>✕</span>";
+  li.childNodes[li.childNodes.length - 1].addEventListener("click", function(ev) {
     let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
     if (confirmed)
-      deleteTime(date);
+      deleteTime(parseInt(ev.target.dataset.date));
   });
   return li;
 }
