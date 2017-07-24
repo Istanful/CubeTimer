@@ -90,6 +90,11 @@ main, #drawer {
   float: right;
   width: 100%;
   position: relative;
+  transition: transform 0.2s ease;
+}
+
+.timer-state-1 {
+  transform: scale(0.9);
 }
 
 #timer {

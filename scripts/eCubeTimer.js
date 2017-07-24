@@ -7,7 +7,7 @@ let currentScramble;
 let lastTimeStarted;
 let lastTimeDuration;
 let timerIntervalId;
-let timerState = 0; /* 0 idle, 1 inspection, 2 running, 3 stopping */
+let timerState = 0; /* 0 idle, 1 holding, 2 inspection, 3 running, 4 stopping */
 let defaultStartKeys = [32, 0];
 
 document.addEventListener("keyup", handleTimer);
@@ -17,13 +17,16 @@ function handleTimer(ev) {
   let evUp = ev.type == "keyup";
   let evDown = !evUp;
 
-  if (startKeys().contains(ev.which) && timerState == 0 && evUp)
+  if (startKeys().contains(ev.which) && timerState == 0 && evDown)
+    timerState = 1;
+  else if (startKeys().contains(ev.which) && timerState == 1 && evUp)
     startTimer();
-  else if (willStopTimer(ev.which) && timerState == 2 && evDown)
+  else if (willStopTimer(ev.which) && timerState == 3 && evDown)
     stopTimer();
-  else if (willStopTimer(ev.which) && timerState == 3 && evUp) {
+  else if (willStopTimer(ev.which) && timerState == 4 && evUp) {
     timerState = 0;
   }
+  updateTimerClass();
 }
 
 function willStopTimer(keycode) {
@@ -43,21 +46,24 @@ function handleTouch(ev) {
 
   switch (ev.type) {
     case "touchstart":
-      if (timerState == 2)
-        stopTimer();
       touchStart = { x: ev.changedTouches[0].pageX, y: ev.changedTouches[0].pageY };
+      if (timerState == 3)
+        stopTimer();
+      else
+        timerState = 1;
       break;
     case "touchend":
-      let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
-                    y: touchStart.y - ev.changedTouches[0].pageY };
-      if (Math.abs(delta.x) < maxDistance &&
-          Math.abs(delta.y) < maxDistance &&
-          timerState == 0)
-            startTimer();
-      else if (timerState == 3) {
-          timerState = 0;
-      }
-  }
+        let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
+                      y: touchStart.y - ev.changedTouches[0].pageY };
+        if (Math.abs(delta.x) < maxDistance &&
+            Math.abs(delta.y) < maxDistance &&
+            timerState == 1)
+              startTimer();
+        else if (timerState == 3) {
+            timerState = 0;
+        }
+    }
+    updateTimerClass();
 }
 
 function startTimer() {
@@ -67,7 +73,7 @@ function startTimer() {
     timerIntervalId = setInterval(updateTimer, 10);
   else
     $("#time").text("Running");
-  timerState = 2;
+  timerState = 3;
 }
 
 function stopTimer() {
@@ -77,12 +83,18 @@ function stopTimer() {
   addTime(lastTimeDuration, lastTimeStarted, currentScramble);
   $("#time").text(formatTime(lastTimeDuration));
   syncTimes();
-  timerState = 3;
+  timerState = 4;
 }
 
 function updateTimer() {
   let time = new Date().getTime() - lastTimeStarted;
   $("#time").text(formatTime(time));
+}
+
+function updateTimerClass() {
+  let timer = document.getElementById("timerSection");
+  timer.className = timer.className.replace(/ *timer-state-\d/, " ");
+  timer.className += "timer-state-" + timerState;
 }
 
 function formatTime(time) {
