@@ -112,6 +112,9 @@ main, #drawer {
   text-indent: none;
   max-width: 80%;
 }
+@media (max-width: 500px) { #scramble { font-size: 12px; }}
+@media (max-width: 450px) { #scramble { font-size: 10px; }}
+@media (max-width: 400px) { #scramble { font-size: 9px; }}
 
 #times {
   padding: 0;
