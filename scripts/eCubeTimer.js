@@ -84,6 +84,7 @@ function stopTimer() {
   $("#time").text(formatTime(lastTimeDuration));
   syncTimes();
   timerState = 4;
+  document.dispatchEvent(timesUpdated);
 }
 
 function updateTimer() {
@@ -149,6 +150,7 @@ function initializeTimer() {
   populateSessionSelects();
   $("#newSession").click(promptNewSession);
   $("#resetSession").click(function() { promptClearSession(currentSession) });
+  document.dispatchEvent(timerInitialize);
 }
 
 function promptNewSession() {

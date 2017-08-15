@@ -150,6 +150,8 @@ main, #drawer {
 
 #stats {
   text-align: left;
+  z-index: 1;
+  position: relative;
 }
 
 #statsSection {
@@ -159,6 +161,16 @@ main, #drawer {
   background: #c14444;
   width: 100%;
   padding: 20px;
+  position: relative;
+}
+
+#graph {
+  left: 0;
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  opacity: 0.15;
 }
 
 @media (min-width: 1270px) {

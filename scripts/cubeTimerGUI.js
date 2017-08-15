@@ -23,6 +23,7 @@ function populateTimesDrawer() {
   for (let i = 0; i < times.length; i++) {
     $("#times").prepend(buildTimeMarkup(times[i], times[i].started_at));
   }
+  document.dispatchEvent(timesReload);
 }
 
 function closeSelects() {
