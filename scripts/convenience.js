@@ -105,3 +105,24 @@ function randomRange(a, b) {
 String.prototype.break = function() {
   return this.replace(/\n/g, "<br />");
 }
+
+String.prototype.format = function() {
+  return this.replace(/<br.*?\/>/g, "\r\n");
+}
+
+Element.prototype.addClass = function(klass) {
+  this.className += " " + klass;
+}
+
+Element.prototype.removeClass = function(klass) {
+  this.className = this.className.replace(klass, "");
+}
+
+function copyToClipboard(data) {
+  let el = document.createElement("textarea");
+  el.innerHTML = data;
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand("copy");
+  el.remove();
+}

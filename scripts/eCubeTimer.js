@@ -42,6 +42,7 @@ document.getElementById("timerSection").addEventListener("touchend", handleTouch
 let touchStart;
 
 function handleTouch(ev) {
+  if (ev.target.id == "copy-scramble") return; // Refactor me when more controls
   let maxDistance = 10;
 
   switch (ev.type) {

@@ -82,7 +82,7 @@ function promptTimesImport() {
   times = times.split(",");                 // Split times
   for (let i = times.length - 1; i >= 0; i-=1)
     addTime(times[i]);
-    // addTime(times[i]);  // Adding times backwards since the newest imported is the last in the list
+    // Adding times backwards since the newest imported is the last in the list
 
   syncTimes();
 }
@@ -101,3 +101,15 @@ function alignTimerSection() {
 }
 $(window).resize(alignTimerSection);
 $("#statsSection").resize(alignTimerSection);
+
+function shine(element) {
+  element.addClass("shine");
+  setTimeout(function() {
+    element.removeClass("shine");
+  }, 200);
+}
+function copyScramble() {
+  shine(document.getElementById("scramble"));
+  copyToClipboard(currentScramble.format());
+}
+document.getElementById("copy-scramble").addEventListener("click", copyScramble);
