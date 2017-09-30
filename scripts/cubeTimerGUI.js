@@ -4,16 +4,16 @@ function updateScramble() {
 }
 
 function buildTimeMarkup(time, date) {
-  let li = document.createElement("li");
-  li.innerHTML = "<span style='float: left'>" + formatTime(time.duration) + "</span>" +
-                 "<span>" + new Date(time.started_at).format() + "</span>" +
-                 "<span class='delete-time' data-date='" + date + "'>✕</span>";
-  li.childNodes[li.childNodes.length - 1].addEventListener("click", function(ev) {
+  let tr = document.createElement("tr");
+  tr.innerHTML = "<td>" + formatTime(time.duration) + "</td>" +
+                 "<td>" + new Date(time.started_at).format() + "</td>" +
+                 "<td class='delete-time' data-date='" + date + "'>✕</td>";
+  tr.childNodes[tr.childNodes.length - 1].addEventListener("click", function(ev) {
     let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
     if (confirmed)
       deleteTime(parseInt(ev.target.dataset.date));
   });
-  return li;
+  return tr;
 }
 
 function populateTimesDrawer() {

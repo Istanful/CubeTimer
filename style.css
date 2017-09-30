@@ -128,18 +128,18 @@ main, #drawer {
   position: relative;
   margin: 0;
   z-index: -1;
+  border-collapse: collapse;
 }
 
-#times li {
-  text-align: center;
-  padding: 10px 20px;
+#times tr {
   box-sizing: border-box;
   background: #2F567D;
 }
 
-#times li:nth-child(odd) {
+#times tr:nth-child(odd) {
   background: #38638e;
 }
+#times tr td { padding: 10px 20px; }
 
 #times .delete-time {
   cursor: pointer;
