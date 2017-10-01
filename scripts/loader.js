@@ -41,7 +41,7 @@ let scripts = [
   "cubeTimerGUI.js",
   "scramblers.js",
   "authorisation.js",
-  "eCubeTimer.js",
+  "cubetimer.js",
   "graph.js"
 ];
 

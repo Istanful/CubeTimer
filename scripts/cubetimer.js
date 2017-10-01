@@ -1,3 +1,6 @@
+/*===========================================================
+  Variables
+===========================================================*/
 let defaultSessionName = "Main";
 let defaultPuzzle = "3x3x3";
 let currentPuzzle;
@@ -9,6 +12,35 @@ let lastTimeDuration;
 let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 holding, 2 inspection, 3 running, 4 stopping */
 let defaultStartKeys = [32, 0];
+
+/*===========================================================
+  Timer management
+===========================================================*/
+function startTimer() {
+  lastTimeStarted = new Date().getTime();
+  lastTimeDuration = null;
+  if (saveAccess("options.timerUpdating", true) == true)
+    timerIntervalId = setInterval(updateTimer, 10);
+  else
+    $("#time").text("Running");
+  timerState = 3;
+}
+
+function stopTimer() {
+  if (saveAccess("options.timerUpdating", true) == true)
+    clearInterval(timerIntervalId);
+  lastTimeDuration = new Date().getTime() - lastTimeStarted;
+  addTime(lastTimeDuration, lastTimeStarted, currentScramble);
+  $("#time").text(formatTime(lastTimeDuration));
+  syncTimes();
+  timerState = 4;
+  document.dispatchEvent(timesUpdated);
+}
+
+function updateTimer() {
+  let time = new Date().getTime() - lastTimeStarted;
+  $("#time").text(formatTime(time));
+}
 
 document.addEventListener("keyup", handleTimer);
 document.addEventListener("keydown", handleTimer);
@@ -27,14 +59,6 @@ function handleTimer(ev) {
     timerState = 0;
   }
   updateTimerClass();
-}
-
-function willStopTimer(keycode) {
-	return saveAccess("save.options.mashStop", true) || startKeys().contains(keycode);
-}
-
-function startKeys() {
-  return saveAccess("options.startKeys", defaultStartKeys);
 }
 
 document.getElementById("timerSection").addEventListener("touchstart", handleTouch);
@@ -67,62 +91,18 @@ function handleTouch(ev) {
     updateTimerClass();
 }
 
-function startTimer() {
-  lastTimeStarted = new Date().getTime();
-  lastTimeDuration = null;
-  if (saveAccess("options.timerUpdating", true) == true)
-    timerIntervalId = setInterval(updateTimer, 10);
-  else
-    $("#time").text("Running");
-  timerState = 3;
+function willStopTimer(keycode) {
+	return saveAccess("save.options.mashStop", true) || startKeys().contains(keycode);
 }
 
-function stopTimer() {
-  if (saveAccess("options.timerUpdating", true) == true)
-    clearInterval(timerIntervalId);
-  lastTimeDuration = new Date().getTime() - lastTimeStarted;
-  addTime(lastTimeDuration, lastTimeStarted, currentScramble);
-  $("#time").text(formatTime(lastTimeDuration));
-  syncTimes();
-  timerState = 4;
-  document.dispatchEvent(timesUpdated);
-}
-
-function updateTimer() {
-  let time = new Date().getTime() - lastTimeStarted;
-  $("#time").text(formatTime(time));
+function startKeys() {
+  return saveAccess("options.startKeys", defaultStartKeys);
 }
 
 function updateTimerClass() {
   let timer = document.getElementById("timerSection");
   timer.className = timer.className.replace(/ *timer-state-\d/, " ");
   timer.className += "timer-state-" + timerState;
-}
-
-function formatTime(time) {
-  if (time == -1) { return "N/A" }
-  time = +time;
-  let cs = time % 1000;
-  let s = time % (1000 * 60) - cs;
-  let m = time - s - cs;
-
-  // Since the values returned above is suffixed
-  // we have to divide afterwards
-  cs = Math.floor(cs / 10);
-  s = Math.floor(s / 1000);
-  m = Math.floor(m / (1000 * 60));
-
-
-  return (m > 0 ? m + ":" : "") + (s < 10 && m > 0 ? "0" + s : s) + "." + (cs < 10 ? "0" + cs : cs);
-}
-
-function parseTime(time) {
-  if (!isNaN(time)) { return time; }
-  let regexMatch = time.match(/(?:(\d+):)*(\d+).(\d{2})/);
-  let m = parseInt(regexMatch[1] || 0) * 60 * 1000;
-  let s = parseInt(regexMatch[2] || 0) * 1000;
-  let ms = parseInt(regexMatch[3] || 0) * 10;
-  return m + s + ms;
 }
 
 function addTime(time, startedAt, scramble) {
@@ -138,20 +118,53 @@ function addTime(time, startedAt, scramble) {
   updateView();
 }
 
+function deleteTime(date, session = currentSession, puzzle = currentPuzzle) {
+  save.sessions[session][puzzle].times.remove(date, "started_at");
+  updateView();
+  saveProgress();
+}
+
+function saveCurrentSession() {
+  save.lastPuzzle = currentPuzzle;
+  save.lastSession = currentSession;
+}
+
+/*===========================================================
+  Time formatting
+===========================================================*/
+function formatTime(time) {
+  if (time == -1) { return "N/A" }
+  time = +time;
+  let cs = time % 1000;
+  let s = time % (1000 * 60) - cs;
+  let m = time - s - cs;
+
+  // Since the values returned above is suffixed
+  // we have to divide afterwards
+  cs = Math.floor(cs / 10);
+  s = Math.floor(s / 1000);
+  m = Math.floor(m / (1000 * 60));
+
+  return (m > 0 ? m + ":" : "") + (s < 10 && m > 0 ? "0" + s : s) + "." + (cs < 10 ? "0" + cs : cs);
+}
+
+function parseTime(time) {
+  if (!isNaN(time)) { return time; }
+  let regexMatch = time.match(/(?:(\d+):)*(\d+).(\d{2})/);
+  let m = parseInt(regexMatch[1] || 0) * 60 * 1000;
+  let s = parseInt(regexMatch[2] || 0) * 1000;
+  let ms = parseInt(regexMatch[3] || 0) * 10;
+  return m + s + ms;
+}
+
+/*===========================================================
+  GUI
+===========================================================*/
+
 function updateView() {
   updateScramble();
   populateTimesDrawer();
   updateStats();
-}
-
-function initializeTimer() {
-  currentPuzzle = saveAccess("lastPuzzle", defaultPuzzle);
-  currentSession = saveAccess("lastSession", defaultSessionName);
-  createOrChooseSession(currentSession);
-  populateSessionSelects();
-  $("#newSession").click(promptNewSession);
-  $("#resetSession").click(function() { promptClearSession(currentSession) });
-  document.dispatchEvent(timerInitialize);
 }
 
 function promptNewSession() {
@@ -196,6 +209,15 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
   updateView();
 }
 
+function initializeTimer() {
+  currentPuzzle = saveAccess("lastPuzzle", defaultPuzzle);
+  currentSession = saveAccess("lastSession", defaultSessionName);
+  createOrChooseSession(currentSession);
+  populateSessionSelects();
+  $("#newSession").click(promptNewSession);
+  $("#resetSession").click(function() { promptClearSession(currentSession) });
+}
+
 // Access or create key
 function saveAccess(keys, defaultValue = {}) {
   keys = keys.split(".");
@@ -217,6 +239,9 @@ function accessNext(obj, keys, index, value) {
   return obj[key];
 }
 
+/*===========================================================
+  Stats
+===========================================================*/
 function getStats(options = {}) {
   let times = save.sessions[currentSession][currentPuzzle].times;
 
@@ -255,15 +280,4 @@ function calcAverage(times) {
             times.min("duration") -
             times.max("duration");
   return sum / [times.length - 2, 1].max();
-}
-
-function deleteTime(date, session = currentSession, puzzle = currentPuzzle) {
-  save.sessions[session][puzzle].times.remove(date, "started_at");
-  updateView();
-  saveProgress();
-}
-
-function saveCurrentSession() {
-  save.lastPuzzle = currentPuzzle;
-  save.lastSession = currentSession;
 }

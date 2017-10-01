@@ -1,3 +1,6 @@
+/*===========================================================
+  Authorisation
+===========================================================*/
 var GoogleAuth; // Google Auth object.
 var isAuthorized;
 var currentApiRequest;
@@ -68,7 +71,9 @@ function setSigninStatus(isSignedIn) {
   }
 }
 
-
+/*===========================================================
+  Save actions
+===========================================================*/
 function load() {
   if (isAuthorized)
     loadFromDrive();
@@ -88,7 +93,7 @@ function saveProgress() {
   if (isAuthorized)
     driveSaveOrCreate();
   /* Always save to local storage for backup */
-  saveToLocalStorage()
+  saveToLocalStorage();
 }
 
 // TODO Make me complete!

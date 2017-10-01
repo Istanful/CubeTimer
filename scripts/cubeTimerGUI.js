@@ -1,3 +1,6 @@
+/*===========================================================
+  GUI
+===========================================================*/
 function updateScramble() {
   currentScramble = scramblers[currentPuzzle]().break();
   $("#scramble").html(currentScramble);

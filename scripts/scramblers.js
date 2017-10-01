@@ -1,3 +1,6 @@
+/*===========================================================
+  Scrambling
+===========================================================*/
 let defaultMoves = "R L F B D U ";
 let signWideMoves = "r l f b d u ";
 let wcaWideMoves = "Rw Lw Fw Bw Dw Uw ";
