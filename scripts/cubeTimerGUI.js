@@ -3,7 +3,7 @@
 ===========================================================*/
 function updateScramble() {
   currentScramble = scramblers[currentPuzzle]().break();
-  $("#scramble").html(currentScramble);
+  document.getElementById("scramble").innerHTML = currentScramble;
 }
 
 function buildTimeMarkup(time, date) {
@@ -20,34 +20,41 @@ function buildTimeMarkup(time, date) {
 }
 
 function populateTimesDrawer() {
+  let markup = document.getElementById("times");
   let times = saveAccess(`sessions.${currentSession}.${currentPuzzle}.times`, []);
-  $("#times").empty();
+  markup.innerHTML = "";
 
   for (let i = 0; i < times.length; i++) {
-    $("#times").prepend(buildTimeMarkup(times[i], times[i].started_at));
+    markup.insertBefore(buildTimeMarkup(times[i], times[i].started_at),
+      markup.childNodes[0]);
   }
 }
 
 function closeSelects() {
   let selecting = document.getElementsByClassName("selecting");
   if (selecting.length != 0)
-    $(".selecting").removeClass("selecting");
+    for (let i = 0; i < selecting.length; i++)
+      selecting[i].removeClass("selecting")
 }
 
 function populateSelect(id, data, defaultOption, onSelection = function(el) { }) {
+  let select = document.getElementById(id);
+  console.log(select);
+
   updateSelectValues(id, data, defaultOption, onSelection);
-  $("#" + id).click(function() { $(this).toggleClass("selecting"); });
+  select.addEventListener("click", function() { select.toggleClass("selecting"); });
 }
 
 function updateSelectValues(id, data, defaultOption, onSelection = function(el) {}) {
-  let select = $("#" + id);
-  let selectBody = select.find(".selectBody");
-  selectBody.html("");
-  let selected = select.find(".selectedOption");
-  selected.html(defaultOption);
+  let select = document.getElementById(id);
+  let selectBody = select.getElementsByClassName("selectBody")[0];
+  selectBody.innerHTML = "";
+  let selected = select.getElementsByClassName("selectedOption")[0];
+  selected.innerHTML = defaultOption;
 
   for (let option in data)
-    selectBody.prepend(buildOption(option, onSelection));
+    selectBody.insertBefore(buildOption(option, onSelection),
+      selectBody.childNodes[0]);
 }
 
 
@@ -55,16 +62,17 @@ function buildOption(name, onSelection) {
   let option = document.createElement("div");
   option.className = "selectOption";
   option.innerHTML = name;
-  $(option).click(function() {
-      $(option).parent().parent().find(".selectedOption").html($(this).html());
+  option.addEventListener("click", function() {
+      option.parentNode.parentNode
+            .getElementsByClassName("selectedOption")[0].innerHTML = this.innerHTML;
       onSelection(option);
   });
   return option;
 }
 
 function fetchSessionInfo() {
-  currentPuzzle = $("#puzzle .selectedOption").html();
-  currentSession = $("#session .selectedOption").html();
+  currentPuzzle = document.querySelector("#puzzle .selectedOption").innerHTML;
+  currentSession = document.querySelector("#session .selectedOption").innerHTML;
 }
 
 function clickSessionButton() {
@@ -88,11 +96,11 @@ function promptTimesImport() {
 
   syncTimes();
 }
-$("#import-times").click(promptTimesImport);
+document.getElementById("import-times").addEventListener("click", promptTimesImport);
 
 function updateStats() {
   let stats = getStats().break();
-  $("#stats").html(stats);
+  document.getElementById("stats").innerHTML = stats;
   alignTimerSection();
 }
 
@@ -101,8 +109,8 @@ function alignTimerSection() {
   let newHeight = window.innerHeight - statsHeight;
   document.getElementById("timerSection").style.height = newHeight + "px";
 }
-$(window).resize(alignTimerSection);
-$("#statsSection").resize(alignTimerSection);
+window.addEventListener("resize", alignTimerSection);
+document.getElementById("statsSection").addEventListener("resize", alignTimerSection);
 
 function shine(element) {
   element.addClass("shine");

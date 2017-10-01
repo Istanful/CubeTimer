@@ -118,6 +118,12 @@ Element.prototype.removeClass = function(klass) {
   this.className = this.className.replace(klass, "");
 }
 
+Element.prototype.toggleClass = function(klass) {
+  this.className.includes(klass) ?
+    this.removeClass(klass) :
+    this.addClass(klass);
+}
+
 function copyToClipboard(data) {
   let el = document.createElement("textarea");
   el.innerHTML = data;

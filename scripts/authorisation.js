@@ -15,6 +15,10 @@ function handleClientLoad() {
 }
 
 function initClient() {
+  if (!navigator.onLine) {
+    load();
+    return;
+  }
   gapi.client.init({
     'apiKey': 'AIzaSyD3sqkN68H-p7_Rh1KgQBl9oozEDxdi1Tc',
     'clientId': '628862522438-f06i7s7etk5bmjitd6jecqg1lj6ksg2b.apps.googleusercontent.com',
@@ -29,7 +33,8 @@ function initClient() {
     var user = GoogleAuth.currentUser.get();
     setSigninStatus();
 
-    $("#sign-in").click(handleAuthClick);
+    document.getElementById("sign-in").addEventListener("click",
+      handleAuthClick);
     load();
   });
 }
@@ -65,9 +70,9 @@ function setSigninStatus(isSignedIn) {
   var user = GoogleAuth.currentUser.get();
   isAuthorized = user.hasGrantedScopes(SCOPE);
   if (isAuthorized) {
-    $('#sign-in').html('Sign out');
+    document.getElementById("sign-in").innerHTML = 'Sign out';
   } else {
-    $('#sign-in').html('Sign In/Authorize');
+    document.getElementById("sign-in").innerHTML = 'Sign In';
   }
 }
 

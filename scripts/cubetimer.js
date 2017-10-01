@@ -22,7 +22,7 @@ function startTimer() {
   if (saveAccess("options.timerUpdating", true) == true)
     timerIntervalId = setInterval(updateTimer, 10);
   else
-    $("#time").text("Running");
+    document.getElementById("time").innerHTML = "Running";
   timerState = 3;
 }
 
@@ -31,15 +31,14 @@ function stopTimer() {
     clearInterval(timerIntervalId);
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
   addTime(lastTimeDuration, lastTimeStarted, currentScramble);
-  $("#time").text(formatTime(lastTimeDuration));
+  document.getElementById("time").innerHTML = formatTime(lastTimeDuration);
   syncTimes();
   timerState = 4;
-  document.dispatchEvent(timesUpdated);
 }
 
 function updateTimer() {
   let time = new Date().getTime() - lastTimeStarted;
-  $("#time").text(formatTime(time));
+  document.getElementById("time").innerHTML = formatTime(time);
 }
 
 document.addEventListener("keyup", handleTimer);
@@ -197,8 +196,8 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
 
   if (!save.sessions[session]) {
     save.sessions[session] = {};
-    $("#session .selectBody").append(buildOption(session, clickSessionButton));
-    $("#session .selectedOption").html(session);
+    document.querySelector("#session .selectBody").appendChild(buildOption(session, clickSessionButton));
+    document.querySelector("#session .selectedOption").innerHTML = session;
     saveProgress();
   }
   if (!save.sessions[session][puzzle]) {
@@ -214,8 +213,9 @@ function initializeTimer() {
   currentSession = saveAccess("lastSession", defaultSessionName);
   createOrChooseSession(currentSession);
   populateSessionSelects();
-  $("#newSession").click(promptNewSession);
-  $("#resetSession").click(function() { promptClearSession(currentSession) });
+  document.getElementById("newSession").addEventListener("click", promptNewSession);
+  document.getElementById("resetSession").addEventListener("click",
+    function() { promptClearSession(currentSession) });
 }
 
 // Access or create key

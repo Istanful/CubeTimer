@@ -35,10 +35,6 @@ main, #drawer {
   box-sizing: border-box;
 }
 
-#times {
- height: 500px;
-}
-
 #drawer {
   height: 100%;
   background: #204466;
@@ -201,6 +197,7 @@ table#times .delete-time {
   .btn:hover, .select:hover, .selectOption:hover {
     transform: scale(1.1);
     box-shadow: -2px 2px 5px rgba(0,0,0,0.4);
+    z-index: 1;
   }
 
   #times li.slide {

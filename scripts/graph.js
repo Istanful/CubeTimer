@@ -48,8 +48,9 @@ document.addEventListener('timer:initialize', function() {
   }
 
   function scaleGraph() {
-    canvas.width = $("#statsSection")[0].scrollWidth;
-    canvas.height = $("#statsSection")[0].scrollHeight / 2;
+    let section = document.getElementById("statsSection");
+    canvas.width = section.scrollWidth;
+    canvas.height = section.scrollHeight / 2;
   }
 
   generateGraph();
