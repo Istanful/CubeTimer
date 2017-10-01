@@ -37,7 +37,6 @@ function loadScript(fileName, callback) {
 }
 
 let scripts = [
-  "events.js",
   "convenience.js",
   "cubeTimerGUI.js",
   "scramblers.js",
