@@ -103,8 +103,7 @@ main, #drawer {
   left: 50%;
   transform: translate(-50%, -50%);
   min-height: 200px;
-  width: fit-content;
-  max-width: 430px;
+  width: 90%;
 }
 
 #time {
@@ -113,10 +112,17 @@ main, #drawer {
 }
 
 #scramble {
+  font-size: 3.5vw;
+  display: inline-block;
   white-space: pre-wrap;
   text-align: left;
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 390px) {
+  #timer { width: 355px; }
+  #scramble { font-size: 1em; }
 }
 
 #times-wrapper {
