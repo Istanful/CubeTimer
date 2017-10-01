@@ -119,29 +119,30 @@ main, #drawer {
   overflow: hidden;
 }
 
-#times {
+#times-wrapper {
   padding: 0;
-  list-style-type: none;
   height: 250px;
   overflow-y: scroll;
-  width: 100%;
   position: relative;
-  margin: 0;
-  z-index: -1;
-  border-collapse: collapse;
+  width: 100%;
 }
 
-#times tr {
+table#times {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0;
+  z-index: -1;
+}
+
+table#times tr {
   box-sizing: border-box;
   background: #2F567D;
 }
 
-#times tr:nth-child(odd) {
-  background: #38638e;
-}
-#times tr td { padding: 10px 20px; }
+table#times tr:nth-child(odd) { background: #38638e; }
+table#times tr td { padding: 10px 20px; }
 
-#times .delete-time {
+table#times .delete-time {
   cursor: pointer;
   float: right;
 }
