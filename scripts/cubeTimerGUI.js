@@ -39,7 +39,6 @@ function closeSelects() {
 
 function populateSelect(id, data, defaultOption, onSelection = function(el) { }) {
   let select = document.getElementById(id);
-  console.log(select);
 
   updateSelectValues(id, data, defaultOption, onSelection);
   select.addEventListener("click", function() { select.toggleClass("selecting"); });

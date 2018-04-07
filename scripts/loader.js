@@ -40,9 +40,9 @@ let scripts = [
   "convenience.js",
   "cubeTimerGUI.js",
   "scramblers.js",
-  "authorisation.js",
   "cubetimer.js",
-  "graph.js"
+  "graph.js",
+  "authorisation.js"
 ];
 
 loadScripts(scripts);

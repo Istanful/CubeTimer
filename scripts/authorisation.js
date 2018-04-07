@@ -8,17 +8,15 @@ var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 var appDataFilename = "eCubetimer.json";
 let save;
 
-function handleClientLoad() {
-  // Load the API's client and auth2 modules.
-  // Call the initClient function after the modules load.
-  gapi.load('client:auth2', initClient);
-}
-
 function initClient() {
   if (!navigator.onLine) {
     load();
     return;
   }
+
+  // Load the API's client and auth2 modules.
+  // Call the initClient function after the modules load.
+  gapi.load('client:auth2', initClient);
   gapi.client.init({
     'apiKey': 'AIzaSyD3sqkN68H-p7_Rh1KgQBl9oozEDxdi1Tc',
     'clientId': '628862522438-f06i7s7etk5bmjitd6jecqg1lj6ksg2b.apps.googleusercontent.com',
@@ -264,4 +262,4 @@ function mergeSessionTimes(first, second) {
   return first.jsonUniqueMerge(second).sortBy("started_at");
 }
 
-handleClientLoad();
+initClient();
