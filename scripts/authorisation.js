@@ -74,7 +74,7 @@ var GoogleDriveStorage = function(gapi) {
 
 var LocalStorage = function() {
   this.load = function(callback) {
-    if (!localStorage.eCubeTimer) return;
+    if (!localStorage.eCubeTimer) return callback(null);
     var data = JSON.parse(localStorage.eCubeTimer);
     callback(data);
   };
@@ -172,17 +172,5 @@ function getEmptySave() {
 }
 
 function syncTimes() {
-  // If offline mode just save to localStorage
-  if (!isAuthorized) {
-    saveProgress();
-    return;
-  }
-
   storage.save(save);
-}
-
-function mergeSessionTimes(first, second) {
-  first = first.sessions[currentSession][currentPuzzle].times;
-  second = second.sessions[currentSession][currentPuzzle].times;
-  return first.jsonUniqueMerge(second).sortBy("started_at");
 }
