@@ -93,7 +93,7 @@ function promptTimesImport() {
     addTime(times[i]);
     // Adding times backwards since the newest imported is the last in the list
 
-  syncTimes();
+  saveManager.save(save);
 }
 document.getElementById("import-times").addEventListener("click", promptTimesImport);
 

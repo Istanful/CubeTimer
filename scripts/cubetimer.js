@@ -32,7 +32,7 @@ function stopTimer() {
   lastTimeDuration = new Date().getTime() - lastTimeStarted;
   addTime(lastTimeDuration, lastTimeStarted, currentScramble);
   document.getElementById("time").innerHTML = formatTime(lastTimeDuration);
-  syncTimes();
+  saveManager.save(save);
   timerState = 4;
 }
 
@@ -119,8 +119,8 @@ function addTime(time, startedAt, scramble) {
 
 function deleteTime(date, session = currentSession, puzzle = currentPuzzle) {
   save.sessions[session][puzzle].times.remove(date, "started_at");
+  saveManager.save(save);
   updateView();
-  saveProgress();
 }
 
 function saveCurrentSession() {
@@ -177,7 +177,7 @@ function promptClearSession(session) {
   let confirmed = confirm(`Are you sure you want to delete all ${currentPuzzle} times in "` + session + `"?`);
   if (confirmed) {
     clearSession(session);
-    saveProgress();
+    saveManager.save(save);
   }
 }
 
@@ -187,7 +187,7 @@ function clearSession(name) {
   createOrChooseSession(session || defaultSessionName);
   updateSelectValues("session", save.sessions, session);
   updateStats();
-  saveProgress();
+  saveManager.save(save);
 }
 
 function createOrChooseSession(session = currentSession, puzzle = currentPuzzle) {
@@ -199,7 +199,7 @@ function createOrChooseSession(session = currentSession, puzzle = currentPuzzle)
     save.sessions[session] = {};
     document.querySelector("#session .selectBody").appendChild(buildOption(session, clickSessionButton));
     document.querySelector("#session .selectedOption").innerHTML = session;
-    saveProgress();
+    saveManager.save(save);
   }
   if (!save.sessions[session][puzzle]) {
     save.sessions[session][puzzle] = {}

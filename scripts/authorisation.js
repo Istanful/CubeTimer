@@ -6,7 +6,8 @@ var isAuthorized;
 var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 var appDataFilename = "eCubetimer.json";
 var storage;
-let save;
+var save;
+var saveManager = new SaveManager();
 
 if (navigator.onLine) {
   gapi.load('client:auth2', function() {
@@ -16,11 +17,11 @@ if (navigator.onLine) {
       var user = GoogleAuth.currentUser.get();
       setSigninStatus();
       document.getElementById("sign-in").addEventListener("click", handleAuthClick);
-      load();
+      saveManager.load(initializeTimer);
     });
   });
 } else {
-  load();
+  saveManager.load(initializeTimer);
 }
 
 function initGapClient() {
@@ -52,38 +53,4 @@ function setSigninStatus(isSignedIn) {
   } else {
     document.getElementById("sign-in").innerHTML = 'Sign In';
   }
-}
-
-/*===========================================================
-  Save actions
-===========================================================*/
-function currentStorage() {
-  if (isAuthorized){  return new GoogleDriveStorage(gapi); }
-  return new LocalStorage();
-}
-
-function load() {
-  currentStorage().load(function(data) {
-    save = data || getEmptySave();
-    initializeTimer();
-  });
-}
-
-function saveProgress() {
-  currentStorage().save(save);
-}
-
-// TODO Make me complete!
-function getEmptySave() {
-  let save = { sessions: {} };
-  save.sessions[defaultSessionName] = {};
-  save.sessions[defaultSessionName][defaultPuzzle] = {};
-  save.sessions[defaultSessionName][defaultPuzzle].times = [];
-  save.options = {};
-  save.options.startKeys = [32, 0];
-  return save;
-}
-
-function syncTimes() {
-  currentStorage().save(save);
 }

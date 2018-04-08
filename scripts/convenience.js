@@ -57,7 +57,7 @@ Array.prototype.average = function(property) {
   return this.sum(property) / this.length;
 }
 
-Array.prototype.jsonUniqueMerge = function(second) {
+Array.prototype.union = function(second) {
   let all = this.concat(second);
   for (let a = 0; a < all.length; a++) {
     let el = JSON.stringify(all[a]);
@@ -67,7 +67,7 @@ Array.prototype.jsonUniqueMerge = function(second) {
     }
   }
   return all;
-}
+};
 
 Array.prototype.sortBy = function(property) {
   return this.sort(function(a, b) {

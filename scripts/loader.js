@@ -37,6 +37,7 @@ function loadScript(fileName, callback) {
 }
 
 let scripts = [
+  "saveManager.js",
   "storage.js",
   "convenience.js",
   "cubeTimerGUI.js",
