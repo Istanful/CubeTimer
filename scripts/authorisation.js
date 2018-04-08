@@ -1,6 +1,7 @@
 /*===========================================================
   Storage
 ===========================================================*/
+// #region
 var GoogleDriveStorage = function(gapi) {
   this.gapi = gapi;
   this.load = function(callback) {
@@ -85,8 +86,9 @@ var LocalStorage = function() {
 
   this.clear = function() {
     localStorage.clear();
-  }
+  };
 };
+// #endregion
 
 /*===========================================================
   Authorisation
@@ -147,17 +149,20 @@ function setSigninStatus(isSignedIn) {
 /*===========================================================
   Save actions
 ===========================================================*/
+function currentStorage() {
+  if (isAuthorized){  return new GoogleDriveStorage(gapi); }
+  return new LocalStorage();
+}
+
 function load() {
-  if (isAuthorized) { storage = new GoogleDriveStorage(gapi); }
-  else { storage = new LocalStorage(); }
-  storage.load(function(data) {
+  currentStorage().load(function(data) {
     save = data || getEmptySave();
     initializeTimer();
   });
 }
 
 function saveProgress() {
-  storage.save(save);
+  currentStorage().save(save);
 }
 
 // TODO Make me complete!
@@ -172,5 +177,5 @@ function getEmptySave() {
 }
 
 function syncTimes() {
-  storage.save(save);
+  currentStorage().save(save);
 }
