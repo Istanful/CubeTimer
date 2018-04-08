@@ -6,7 +6,7 @@ var GoogleDriveStorage = function(gapi) {
     }.bind(this));
   };
 
-  this.save = function(save, callback = function() { console.log('saved'); }) {
+  this.save = function(save, callback = function() {}) {
     this.getFileId().then(function(fileId) {
       return this.gapi.client.request({
         path: '/upload/drive/v3/files/' + fileId,

@@ -1,7 +1,8 @@
 /*===========================================================
   Save actions
 ===========================================================*/
-var SaveManager = function() {
+var SaveManager = function(user) {
+  this.currentUser = user;
   this.load = function(callback) {
     this.storage().load(function(data) {
       save = data || getEmptySave();
@@ -10,8 +11,7 @@ var SaveManager = function() {
   };
 
   this.storage = function() {
-    if (isAuthorized){  return new GoogleDriveStorage(gapi); }
-    return new LocalStorage();
+    return this.currentUser.storage();
   };
 
   this.save = function(data) {

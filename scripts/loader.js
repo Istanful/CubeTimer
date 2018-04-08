@@ -37,14 +37,15 @@ function loadScript(fileName, callback) {
 }
 
 let scripts = [
-  "saveManager.js",
+  "user.js",
   "storage.js",
+  "saveManager.js",
   "convenience.js",
   "cubeTimerGUI.js",
   "scramblers.js",
   "cubetimer.js",
-  "authorisation.js",
-  "graph.js"
+  "graph.js",
+  "authorisation.js"
 ];
 
 loadScripts(scripts);

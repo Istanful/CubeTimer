@@ -7,48 +7,49 @@ var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 var appDataFilename = "eCubetimer.json";
 var storage;
 var save;
-var saveManager = new SaveManager();
+var currentUser;
+var saveManager;
 
-if (navigator.onLine) {
-  gapi.load('client:auth2', function() {
-    initGapClient().then(function() {
-      GoogleAuth = gapi.auth2.getAuthInstance();
-      GoogleAuth.isSignedIn.listen(updateSigninStatus);
-      var user = GoogleAuth.currentUser.get();
-      setSigninStatus();
-      document.getElementById("sign-in").addEventListener("click", handleAuthClick);
-      saveManager.load(initializeTimer);
-    });
-  });
-} else {
+loadUser(function(user) {
+  currentUser = user;
+  updateSignInButton(currentUser.isAuthorized());
+  currentUser.onStatusChange(updateSignInButton);
+  saveManager = new SaveManager(currentUser);
   saveManager.load(initializeTimer);
+});
+document.getElementById("sign-in").addEventListener("click", handleAuthClick);
+
+function loadUser(callback) {
+  if (navigator.onLine) {
+    gapi.load('client:auth2', function() {
+      initGapClient().then(function() {
+        callback(new OnlineUser(gapi));
+      });
+    });
+  } else {
+    callback(new LocalUser());
+  }
 }
 
 function initGapClient() {
   return gapi.client.init({
     'apiKey': 'AIzaSyD3sqkN68H-p7_Rh1KgQBl9oozEDxdi1Tc',
-    'clientId': '628862522438-f06i7s7etk5bmjitd6jecqg1lj6ksg2b.apps.googleusercontent.com',
+    'clientId': '628862522438-f06i7s7etk5bmjitd6jecqg1lj6ksg2b.apps.OnlineUsercontent.com',
     'scope': SCOPE,
     'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
   });
 }
 
 function handleAuthClick() {
-  if (GoogleAuth.isSignedIn.get()) {
-    GoogleAuth.signOut();
+  if (currentUser.isAuthorized()) {
+    currentUser.googleAuth.signOut();
   } else {
-    GoogleAuth.signIn();
+    currentUser.googleAuth.signIn();
   }
 }
 
-function updateSigninStatus(isSignedIn) {
-  setSigninStatus(isSignedIn);
-}
-
-function setSigninStatus(isSignedIn) {
-  var user = GoogleAuth.currentUser.get();
-  isAuthorized = user.hasGrantedScopes(SCOPE);
-  if (isAuthorized) {
+function updateSignInButton(authorized) {
+  if (authorized) {
     document.getElementById("sign-in").innerHTML = 'Sign out';
   } else {
     document.getElementById("sign-in").innerHTML = 'Sign In';
