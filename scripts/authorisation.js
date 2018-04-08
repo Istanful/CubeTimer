@@ -10,7 +10,7 @@ var GoogleDriveStorage = function(gapi) {
     }.bind(this));
   };
 
-  this.save = function(save) {
+  this.save = function(save, callback = function() { console.log('saved'); }) {
     this.getFileId().then(function(fileId) {
       return this.gapi.client.request({
         path: '/upload/drive/v3/files/' + fileId,
@@ -19,7 +19,7 @@ var GoogleDriveStorage = function(gapi) {
           uploadType: 'media'
         },
         body: String(JSON.stringify(save))
-      });
+      }).then(callback);
     });
   };
 
@@ -80,8 +80,9 @@ var LocalStorage = function() {
     callback(data);
   };
 
-  this.save = function(save) {
+  this.save = function(save, callback = function() {}) {
     localStorage.setItem("eCubeTimer", JSON.stringify(save));
+    callback();
   };
 
   this.clear = function() {
