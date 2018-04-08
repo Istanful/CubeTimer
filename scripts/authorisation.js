@@ -1,60 +1,130 @@
 /*===========================================================
+  Storage
+===========================================================*/
+var GoogleDriveStorage = function(gapi) {
+  this.gapi = gapi;
+  this.load = function(callback) {
+    this.getFileId().then(function(fileId) {
+      this.getSaveContent(fileId).then(callback);
+    }.bind(this));
+  };
+
+  this.save = function(save) {
+    this.getFileId().then(function(fileId) {
+      return this.gapi.client.request({
+        path: '/upload/drive/v3/files/' + fileId,
+        method: 'PATCH',
+        params: {
+          uploadType: 'media'
+        },
+        body: String(JSON.stringify(save))
+      });
+    });
+  };
+
+  this.clear = function() {
+    this.getFileId().then(function(fileId) {
+      return this.gapi.client.request({
+        path: '/drive/v3/files/' + fileId,
+        method: 'DELETE'
+      });
+    });
+  };
+
+  this.getSaveContent = function(fileId) {
+    return this.gapi.client.drive.files
+      .get({
+        fileId: fileId,
+        alt: 'media'
+      }).then(function (data) {
+        return data.result;
+      });
+  };
+
+  this.getFileId = function() {
+    return this.gapi.client.drive.files
+      .list({
+        q: 'name="' + appDataFilename + '"',
+        spaces: 'appDataFolder',
+        fields: 'files(id)'
+      }).then(
+        function (data) {
+          if (data.result.files.length == 0) {
+            return this.createSave();
+          } else {
+            return data.result.files[0].id;
+          }
+        }.bind(this)
+      );
+  };
+
+  this.createSave = function() {
+    return gapi.client.drive.files
+      .create({
+        resource: {
+          name: appDataFilename,
+          parents: ['appDataFolder']
+        },
+        fields: 'id'
+      }).then(function (data) {
+        return data.result.id;
+      });
+  };
+};
+
+var LocalStorage = function() {
+  this.load = function(callback) {
+    if (!localStorage.eCubeTimer) return;
+    var data = JSON.parse(localStorage.eCubeTimer);
+    callback(data);
+  };
+
+  this.save = function(save) {
+    localStorage.setItem("eCubeTimer", JSON.stringify(save));
+  };
+
+  this.clear = function() {
+    localStorage.clear();
+  }
+};
+
+/*===========================================================
   Authorisation
 ===========================================================*/
 var GoogleAuth; // Google Auth object.
 var isAuthorized;
-var currentApiRequest;
 var SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 var appDataFilename = "eCubetimer.json";
+var storage;
 let save;
 
-function initClient() {
-  if (!navigator.onLine) {
-    load();
-    return;
-  }
+if (navigator.onLine) {
+  gapi.load('client:auth2', function() {
+    initGapClient().then(function() {
+      GoogleAuth = gapi.auth2.getAuthInstance();
+      GoogleAuth.isSignedIn.listen(updateSigninStatus);
+      var user = GoogleAuth.currentUser.get();
+      setSigninStatus();
+      document.getElementById("sign-in").addEventListener("click", handleAuthClick);
+      load();
+    });
+  });
+} else {
+  load();
+}
 
-  // Load the API's client and auth2 modules.
-  // Call the initClient function after the modules load.
-  gapi.load('client:auth2', initClient);
-  gapi.client.init({
+function initGapClient() {
+  return gapi.client.init({
     'apiKey': 'AIzaSyD3sqkN68H-p7_Rh1KgQBl9oozEDxdi1Tc',
     'clientId': '628862522438-f06i7s7etk5bmjitd6jecqg1lj6ksg2b.apps.googleusercontent.com',
     'scope': SCOPE,
     'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
-  }).then(function () {
-    GoogleAuth = gapi.auth2.getAuthInstance();
-
-    // Listen for sign-in state changes.
-    GoogleAuth.isSignedIn.listen(updateSigninStatus);
-
-    var user = GoogleAuth.currentUser.get();
-    setSigninStatus();
-
-    document.getElementById("sign-in").addEventListener("click",
-      handleAuthClick);
-    load();
   });
 }
 
 function handleAuthClick() {
   if (GoogleAuth.isSignedIn.get()) {
-    // User is authorized and has clicked 'Sign out' button.
     GoogleAuth.signOut();
-  } else {
-    // User is not signed in. Start Google auth flow.
-    GoogleAuth.signIn();
-  }
-}
-
-function sendAuthorizedApiRequest(requestDetails) {
-  currentApiRequest = requestDetails;
-  if (isAuthorized) {
-    // Make API request
-    gapi.client.request(requestDetails)
-
-    // Reset currentApiRequest variable.
-    currentApiRequest = {};
   } else {
     GoogleAuth.signIn();
   }
@@ -78,25 +148,16 @@ function setSigninStatus(isSignedIn) {
   Save actions
 ===========================================================*/
 function load() {
-  if (isAuthorized)
-    loadFromDrive();
-  else {
-    loadLocalStorageSave();
+  if (isAuthorized) { storage = new GoogleDriveStorage(gapi); }
+  else { storage = new LocalStorage(); }
+  storage.load(function(data) {
+    save = data || getEmptySave();
     initializeTimer();
-  }
-}
-
-function reset() {
-  destroyDriveData();
-  destroyLocalData();
-  location.reload();
+  });
 }
 
 function saveProgress() {
-  if (isAuthorized)
-    driveSaveOrCreate();
-  /* Always save to local storage for backup */
-  saveToLocalStorage();
+  storage.save(save);
 }
 
 // TODO Make me complete!
@@ -110,121 +171,6 @@ function getEmptySave() {
   return save;
 }
 
-function loadLocalStorageSave() {
-  save = localStorage.eCubeTimer ? JSON.parse(localStorage.eCubeTimer) : getEmptySave();
-}
-
-function saveToLocalStorage() {
-  localStorage.setItem("eCubeTimer", JSON.stringify(save));
-}
-
-function createAppDataFile() {
-  return gapi.client.drive.files
-    .create({
-      resource: {
-        name: appDataFilename,
-        parents: ['appDataFolder']
-      },
-      fields: 'id'
-    }).then(function (data) {
-      return {
-        fileId: data.result.id
-      };
-    });
-}
-
-function getAppDataFile() {
-  return gapi.client.drive.files
-    .list({
-      q: 'name="' + appDataFilename + '"',
-      spaces: 'appDataFolder',
-      fields: 'files(id)'
-    }).then(
-      function (data) {
-        id = data.result.files.length == 0 ? null : data.result.files[0].id;
-
-        return {
-          fileId: id
-        };
-      }
-    );
-}
-
-function destroyDriveData() {
-  getAppDataFile().then(function(res) {
-    return gapi.client.request({
-      path: '/drive/v3/files/' + res.fileId,
-      method: 'DELETE'
-    });
-  });
-}
-
-function destroyLocalData() {
-  localStorage.clear();
-}
-
-function getAppDataFileContent(fileId) {
-  return gapi.client.drive.files
-    .get({
-      fileId: fileId,
-      // Download a file — files.get with alt=media file resource
-      alt: 'media'
-    }).then(function (data) {
-      return {
-        fileId: fileId,
-        appData: data.result
-      };
-    });
-}
-
-function loadFromDrive() {
-  getAppDataFile().then(function(res) {
-    if (res.fileId) {
-      getAppDataFileContent(res.fileId).then(function(res) {
-        if (!res.appData)
-          driveCreateSave(initializeTimer);
-        else {
-          save = res.appData;
-          initializeTimer();
-        }
-      });
-    }
-    else {
-      driveCreateSave(initializeTimer)
-    }
-  });
-}
-
-function driveSaveOrCreate() {
-  getAppDataFile().then(function(res) {
-    if (res.fileId) {
-      driveSave(res.fileId, save);
-    }
-    else
-      driveCreateSave();
-  });
-}
-
-function driveCreateSave(callback) {
-  save = save || getEmptySave();
-  createAppDataFile().then(function(res) {
-    driveSave(res.fileId, save, callback);
-  });
-}
-
-function driveSave(fileId, data, callback = function() {}) {
-  return gapi.client.request({
-    path: '/upload/drive/v3/files/' + fileId,
-    method: 'PATCH',
-    params: {
-      uploadType: 'media'
-    },
-    body: String(JSON.stringify(data))
-  }).then(function(res) {
-    console.log(res.status == 200 ? "Succesfully saved to drive" : "Failed to save to drive");
-  });
-}
-
 function syncTimes() {
   // If offline mode just save to localStorage
   if (!isAuthorized) {
@@ -232,28 +178,7 @@ function syncTimes() {
     return;
   }
 
-  // Sync first
-  getAppDataFile().then(function(res) {
-    if (res.fileId) {
-      getAppDataFileContent(res.fileId).then(function(res) {
-        if (!res.appData) { return; }
-        let other = res.appData;
-        save.sessions[currentSession][currentPuzzle].times = mergeSessionTimes(save, other);
-      });
-    }
-
-    // Then save
-    return gapi.client.request({
-      path: '/upload/drive/v3/files/' + res.fileId,
-      method: 'PATCH',
-      params: {
-        uploadType: 'media'
-      },
-      body: String(JSON.stringify(save))
-    }).then(function() {
-      populateTimesDrawer();
-    });
-  });
+  storage.save(save);
 }
 
 function mergeSessionTimes(first, second) {
@@ -261,5 +186,3 @@ function mergeSessionTimes(first, second) {
   second = second.sessions[currentSession][currentPuzzle].times;
   return first.jsonUniqueMerge(second).sortBy("started_at");
 }
-
-initClient();
