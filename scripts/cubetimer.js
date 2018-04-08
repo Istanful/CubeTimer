@@ -11,7 +11,7 @@ let lastTimeStarted;
 let lastTimeDuration;
 let timerIntervalId;
 let timerState = 0; /* 0 idle, 1 holding, 2 inspection, 3 running, 4 stopping */
-let defaultStartKeys = [32, 0];
+var defaultStartKeys = [32, 0];
 
 /*===========================================================
   Timer management
@@ -164,6 +164,7 @@ function updateView() {
   updateScramble();
   populateTimesDrawer();
   updateStats();
+  generateGraph();
 }
 
 function promptNewSession() {
