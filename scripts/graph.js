@@ -51,5 +51,3 @@ function scaleGraph() {
   canvas.width = section.scrollWidth;
   canvas.height = section.scrollHeight / 2;
 }
-
-generateGraph();

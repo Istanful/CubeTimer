@@ -164,6 +164,7 @@ function updateView() {
   updateScramble();
   populateTimesDrawer();
   updateStats();
+  generateGraph();
 }
 
 function promptNewSession() {
