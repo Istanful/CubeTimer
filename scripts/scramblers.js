@@ -8,10 +8,26 @@ let threeWide = "3r 3l 3f 3b 3d 3u ";
 
 let scramblers = {
   "2x2x2": function() {
-    return randomMoves(10)
+    return new Scramble(
+      10,
+      [
+        "R",  "F", "U",
+        "R2", "F2", "U2",
+        "R'", "F'", "U'"
+      ],
+      [new RepeatRule(), new OppositeRule()]
+    ).generate();
   },
   "3x3x3": function() {
-    return randomMoves();
+    return new Scramble(
+      19,
+      [
+        "R", "L", "F", "B", "D", "U",
+        "R2", "L2", "F2", "B2", "D2", "U2",
+        "R'", "L'", "F'", "B'", "D'", "U'"
+      ],
+      [new RepeatRule(), new OppositeRule()]
+    ).generate();
   },
   "4x4x4": function() {
     switch (getNotation("4x4x4")) {
@@ -94,6 +110,68 @@ let scramblers = {
     }
     return scramble;
   }
+}
+
+let Scramble = function(length, availableMoves, rules) {
+  this.availableMoves = availableMoves;
+  this.rules = rules;
+  this.length = length;
+
+  this.generate = function() {
+    let scramble = [];
+    for (let i = 0; i < this.length; i++) {
+      let allowedMoves = availableMoves.slice(0);
+      for (let i = 0; i < this.rules.length; i++) {
+        allowedMoves = this.rules[i].apply(scramble, availableMoves, allowedMoves);
+      }
+      scramble.push(allowedMoves.random());
+    }
+    return scramble.join(' ');
+  }
+}
+
+let RepeatRule = function() {
+  this.apply = function(currentScramble, availableMoves, allowedMoves) {
+    allowedMoves = allowedMoves.slice(0);
+    let lastThree = currentScramble.range([currentScramble.length - 3, 0].max(), currentScramble.length);
+    for (let b = 0; b < lastThree.length;  b++) {
+      for (let i = 0; i < allowedMoves.length; i++) {
+        if (!allowedMoves[i]) continue;
+        if (allowedMoves[i].replace(/['2]/, "") === lastThree[b].replace(/['2]/, "")) {
+          allowedMoves.splice(i, 1);
+        }
+      }
+    }
+    return allowedMoves;
+  }
+};
+
+let OppositeRule = function() {
+  this.apply = function(currentScramble, availableMoves, allowedMoves) {
+    allowedMoves = allowedMoves.slice(0);
+    let lastThree = currentScramble.range([currentScramble.length - 3, 0].max(), currentScramble.length);
+    for (let i = 0; i < allowedMoves.length; i++) {
+      for (let b = 0; b < lastThree.length; b++) {
+        if (!allowedMoves[i]) continue;
+        if (isOpposite(allowedMoves[i], lastThree[b])) {
+          allowedMoves.splice(i, 1);
+        }
+      }
+    }
+    return allowedMoves;
+  }
+};
+
+var moveMap = {
+  'R': 'L',
+  'U': 'D',
+  'F': 'B'
+}
+
+function isOpposite(first, second) {
+  first = first.replace(/['2]/, "");
+  second = second.replace(/['2]/, "");
+  return moveMap[first] === second || moveMap[second] === first;
 }
 
 function randomUnique(count = 4, availableMoves = defaultMoves, modifiers = "' 2") {
