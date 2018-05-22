@@ -35,7 +35,57 @@ var TimerController = function() {
     this.onKeyUp(ev);
   }
 }
-var timerController = new TimerController();
+
+var InspectionTimerController = function() {
+  this.timeouts = [];
+
+  this.onKeyDown = function(ev) {
+    this.clearTimeouts();
+    if (timerState === 3) { stopTimer(); }
+    else if (timerState === 2) { startTimer(); }
+    else {
+      timerState = 1;
+    }
+  }
+
+  this.onTouchDown = function(ev) {
+    this.onKeyDown(ev);
+  }
+
+  this.onKeyUp = function(ev) {
+    if (timerState === 1) {
+      this.tick(this, 15);
+      timerState = 2;
+    }
+  }
+
+  this.onTouchUp = function(ev) {
+    this.onKeyUp(ev);
+  }
+
+  this.tick = function(that, secondsLeft) {
+    if (timerState === 3) { return }
+    if (secondsLeft < 1) { return startTimer(); }
+    document.getElementById("time").innerHTML = secondsLeft;
+    that.timeouts.push(setTimeout(function() {
+      that.tick(that, secondsLeft - 1);
+    }, 1000));
+  }
+
+  this.clearTimeouts = function() {
+    for (let i = 0; i < this.timeouts.length; i++) {
+      clearTimeout(this.timeouts[i]);
+    }
+  }
+}
+
+function timerController() {
+  if (saveAccess("options.inspectionTime", 0) > 0) {
+    return new InspectionTimerController();
+  } else {
+    return new TimerController();
+  }
+}
 
 function startTimer() {
   lastTimeStarted = new Date().getTime();
@@ -69,8 +119,8 @@ function handleTimer(ev) {
   let evUp = ev.type == "keyup";
   let evDown = !evUp;
   if (!startKeys().contains(ev.which)) { return; }
-  if (evUp) { timerController.onKeyUp(); }
-  else { timerController.onKeyDown(); }
+  if (evUp) { timerController().onKeyUp(); }
+  else { timerController().onKeyDown(); }
   updateTimerClass();
 }
 
@@ -85,14 +135,14 @@ function handleTouch(ev) {
   switch (ev.type) {
     case "touchstart":
       touchStart = { x: ev.changedTouches[0].pageX, y: ev.changedTouches[0].pageY };
-      timerController.onTouchDown(ev);
+      timerController().onTouchDown(ev);
       break;
     case "touchend":
       let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
                     y: touchStart.y - ev.changedTouches[0].pageY };
       if (Math.abs(delta.x) < maxDistance &&
         Math.abs(delta.y) < maxDistance) {
-        timerController.onTouchUp(ev);
+        timerController().onTouchUp(ev);
       }
   }
   updateTimerClass();
