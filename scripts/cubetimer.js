@@ -16,6 +16,27 @@ var defaultStartKeys = [32, 0];
 /*===========================================================
   Timer management
 ===========================================================*/
+var TimerController = function() {
+  this.onKeyDown = function(ev) {
+    if (timerState === 3) { stopTimer(); }
+    else { timerState = 1; }
+  }
+
+  this.onTouchDown = function(ev) {
+    this.onKeyDown(ev);
+  }
+
+  this.onKeyUp = function(ev) {
+    if (timerState === 1) { startTimer(); }
+    else { timerState = 0; }
+  }
+
+  this.onTouchUp = function(ev) {
+    this.onKeyUp(ev);
+  }
+}
+var timerController = new TimerController();
+
 function startTimer() {
   lastTimeStarted = new Date().getTime();
   lastTimeDuration = null;
@@ -47,23 +68,16 @@ document.addEventListener("keydown", handleTimer);
 function handleTimer(ev) {
   let evUp = ev.type == "keyup";
   let evDown = !evUp;
-
-  if (startKeys().contains(ev.which) && timerState == 0 && evDown)
-    timerState = 1;
-  else if (startKeys().contains(ev.which) && timerState == 1 && evUp)
-    startTimer();
-  else if (willStopTimer(ev.which) && timerState == 3 && evDown)
-    stopTimer();
-  else if (willStopTimer(ev.which) && timerState == 4 && evUp) {
-    timerState = 0;
-  }
+  if (!startKeys().contains(ev.which)) { return; }
+  if (evUp) { timerController.onKeyUp(); }
+  else { timerController.onKeyDown(); }
   updateTimerClass();
 }
 
 document.getElementById("timerSection").addEventListener("touchstart", handleTouch);
 document.getElementById("timerSection").addEventListener("touchend", handleTouch);
-let touchStart;
 
+let touchStart;
 function handleTouch(ev) {
   if (ev.target.id == "copy-scramble") return; // Refactor me when more controls
   let maxDistance = 10;
@@ -71,27 +85,17 @@ function handleTouch(ev) {
   switch (ev.type) {
     case "touchstart":
       touchStart = { x: ev.changedTouches[0].pageX, y: ev.changedTouches[0].pageY };
-      if (timerState == 3)
-        stopTimer();
-      else
-        timerState = 1;
+      timerController.onTouchDown(ev);
       break;
     case "touchend":
-        let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
-                      y: touchStart.y - ev.changedTouches[0].pageY };
-        if (Math.abs(delta.x) < maxDistance &&
-            Math.abs(delta.y) < maxDistance &&
-            timerState == 1)
-              startTimer();
-        else if (timerState == 3) {
-            timerState = 0;
-        }
-    }
-    updateTimerClass();
-}
-
-function willStopTimer(keycode) {
-	return saveAccess("save.options.mashStop", true) || startKeys().contains(keycode);
+      let delta = { x: touchStart.x - ev.changedTouches[0].pageX,
+                    y: touchStart.y - ev.changedTouches[0].pageY };
+      if (Math.abs(delta.x) < maxDistance &&
+        Math.abs(delta.y) < maxDistance) {
+        timerController.onTouchUp(ev);
+      }
+  }
+  updateTimerClass();
 }
 
 function startKeys() {
