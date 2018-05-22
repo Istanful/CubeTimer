@@ -34,7 +34,17 @@ let scramblers = {
       case "SiGN":
         return randomMoves(40, defaultMoves + signWideMoves);
       default:
-        return randomMoves(40, defaultMoves + wcaWideMoves);
+        return new Scramble(
+          40,
+          [
+            "R", "L", "F", "B", "D", "U",
+            "R2", "L2", "F2", "B2", "D2", "U2",
+            "Rw2", "Lw2", "Fw2", "Bw2", "Dw2", "Uw2",
+            "R'", "L'", "F'", "B'", "D'", "U'",
+            "Rw'", "Lw'", "Fw'", "Bw'", "Dw'", "Uw'"
+          ],
+          [new RepeatRule(), new OppositeRule()]
+        ).generate();
     }
   },
   "5x5x5": function() {
@@ -130,26 +140,34 @@ let Scramble = function(length, availableMoves, rules) {
   }
 }
 
-let RepeatRule = function() {
+function face(move) {
+  return move.replace(/['2w]/g, "").toUpperCase();
+}
+
+let RepeatRule = function(count) {
+  this.count = count || 2;
   this.apply = function(currentScramble, availableMoves, allowedMoves) {
     allowedMoves = allowedMoves.slice(0);
-    let lastThree = currentScramble.range([currentScramble.length - 3, 0].max(), currentScramble.length);
-    for (let b = 0; b < lastThree.length;  b++) {
-      for (let i = 0; i < allowedMoves.length; i++) {
-        if (!allowedMoves[i]) continue;
-        if (allowedMoves[i].replace(/['2]/, "") === lastThree[b].replace(/['2]/, "")) {
-          allowedMoves.splice(i, 1);
+    let last = currentScramble.range([currentScramble.length - this.count, 0].max(), currentScramble.length);
+    let allowed = [];
+    for (let i = 0; i < allowedMoves.length; i++) {
+      let isAllowed = true;
+      for (let b = 0; b < last.length; b++) {
+        if (face(allowedMoves[i]) === face(last[b])) {
+          isAllowed = false;
         }
       }
+      if (isAllowed) { allowed.push(allowedMoves[i]); }
     }
-    return allowedMoves;
+    return allowed;
   }
 };
 
-let OppositeRule = function() {
+let OppositeRule = function(count) {
+  this.count = count || 3;
   this.apply = function(currentScramble, availableMoves, allowedMoves) {
     allowedMoves = allowedMoves.slice(0);
-    let lastThree = currentScramble.range([currentScramble.length - 3, 0].max(), currentScramble.length);
+    let lastThree = currentScramble.range([currentScramble.length - this.count, 0].max(), currentScramble.length);
     for (let i = 0; i < allowedMoves.length; i++) {
       for (let b = 0; b < lastThree.length; b++) {
         if (!allowedMoves[i]) continue;
@@ -169,8 +187,8 @@ var moveMap = {
 }
 
 function isOpposite(first, second) {
-  first = first.replace(/['2]/, "");
-  second = second.replace(/['2]/, "");
+  first = face(first);
+  second = face(second);
   return moveMap[first] === second || moveMap[second] === first;
 }
 

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script src="squid.js"></script>
+    <script src="scripts/convenience.js"></script>
+    <script src="scripts/scramblers.js"></script>
+    <title>
+    </title>
+  </head>
+  <body>
+    <script charset="utf-8">
+      var beEmpty = function(subject, result) {
+        return new Squid.Predicate(
+          function(subject, result) { return subject.length == 0 },
+          function(success, subject, result) {
+            var message = "";
+            if (!success) { message = "Expected " + subject + " to be empty." }
+            return message
+          },
+          subject,
+          result
+        )
+      }
+
+      Squid.describe('RepeatRule')
+        .it('does not allow repeated moves', function() {
+          let currentScramble = ["R"];
+          let availableMoves = allowedMoves = ["R", "R2", "R'"];
+          let repeatRule = new RepeatRule();
+
+          let result = repeatRule.apply(currentScramble, availableMoves, allowedMoves);
+
+          return Squid.expect(result).to(beEmpty);
+        })
+        .it('does not allow repeated moves in the given range', function() {
+          let currentScramble = ["R", "L", "F"];
+          let availableMoves = allowedMoves = ["R", "L'", "F2"];
+          let repeatRule = new RepeatRule(3);
+
+          let result = repeatRule.apply(currentScramble, availableMoves, allowedMoves);
+
+          return Squid.expect(result).to(beEmpty);
+        })
+        .it('works on wide moves', function() {
+          let currentScramble = ["Rw"];
+          let availableMoves = allowedMoves = ["Rw", "Rw2", "Rw'", "r", "r2", "r'"];
+          let repeatRule = new RepeatRule(3);
+
+          let result = repeatRule.apply(currentScramble, availableMoves, allowedMoves);
+
+          return Squid.expect(result).to(beEmpty);
+        })
+
+      Squid.describe('OppositeRule')
+        .it('does not allow opposite moves', function() {
+          let currentScramble = ["R"];
+          let availableMoves = allowedMoves = ["L"];
+          let oppositeRule = new OppositeRule();
+
+          let result = oppositeRule.apply(currentScramble, availableMoves, allowedMoves);
+
+          return Squid.expect(result).to(beEmpty);
+        })
+        .it('does not allow opposite moves in the given range', function() {
+          let currentScramble = ["R", "F", "U"];
+          let availableMoves = allowedMoves = ["L", "B", "D"];
+          let oppositeRule = new OppositeRule(3);
+
+          let result = oppositeRule.apply(currentScramble, availableMoves, allowedMoves);
+
+          return Squid.expect(result).to(beEmpty);
+        })
+    </script>
+  </body>
+</html>
