@@ -12,9 +12,13 @@ function buildTimeMarkup(time, date) {
                  "<td>" + new Date(time.started_at).format() + "</td>" +
                  "<td class='delete-time' data-date='" + date + "'>✕</td>";
   tr.childNodes[tr.childNodes.length - 1].addEventListener("click", function(ev) {
-    let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
-    if (confirmed)
-      deleteTime(parseInt(ev.target.dataset.date));
+    if (saveAccess("options.viktor.confirmTimeDeletion", true)) {
+      let confirmed = confirm("Are you sure you want to delete the time: " + formatTime(time.duration) + "?");
+      if (confirmed)
+        deleteTime(parseInt(ev.target.dataset.date));
+      return;
+    }
+    return deleteTime(parseInt(ev.target.dataset.date));
   });
   return tr;
 }
