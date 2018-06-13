@@ -26,7 +26,7 @@ let scramblers = {
         "R2", "L2", "F2", "B2", "D2", "U2",
         "R'", "L'", "F'", "B'", "D'", "U'"
       ],
-      [new RepeatRule(), new OppositeRule()]
+      [new RepeatRule(), new OppositeRule(2)]
     ).generate();
   },
   "4x4x4": function() {
